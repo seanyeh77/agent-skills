@@ -4,7 +4,7 @@ SeanYeh 的 agent skills（SKILL.md 格式），同時整理成 Claude Code plug
 
 | Plugin | 用途 |
 |---|---|
-| `teaching-materials-style` | 教材風格：Notion 筆記、Slidev 投影片、各種工具畫的圖 |
+| `teaching-materials-style` | 簡報與文件風格：Slidev 投影片、Notion 等文件與筆記、各種工具畫的圖（不限教學） |
 | `google-calendar-schedule-entry` | 把課表、作業與考試截止日加到 Google Calendar |
 | `bash-terminal-progress-ui` | bash 腳本與安裝程式的 spinner / 進度 UI |
 
