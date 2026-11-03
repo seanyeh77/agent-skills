@@ -1,0 +1,6 @@
+{
+  "name": "bash-terminal-progress-ui",
+  "description": "bash 腳本與安裝程式的 spinner / 進度 UI",
+  "version": "1.0.0",
+  "author": { "name": "Hsiu-An Yeh", "url": "https://github.com/seanyeh77" }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "google-calendar-schedule-entry",
+  "description": "把課表、作業與考試截止日加到 Google Calendar（Deadline 日曆規則）",
+  "version": "1.0.0",
+  "author": { "name": "Hsiu-An Yeh", "url": "https://github.com/seanyeh77" }
+}

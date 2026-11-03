@@ -1,0 +1,25 @@
+{
+  "name": "seanyeh77-skills",
+  "description": "SeanYeh 的 Claude skills",
+  "owner": {
+    "name": "Hsiu-An Yeh",
+    "url": "https://github.com/seanyeh77"
+  },
+  "plugins": [
+    {
+      "name": "teaching-materials-style",
+      "source": "./plugins/teaching-materials-style",
+      "description": "SeanYeh 教材風格：Notion 筆記、Slidev 投影片、各種工具畫的圖"
+    },
+    {
+      "name": "google-calendar-schedule-entry",
+      "source": "./plugins/google-calendar-schedule-entry",
+      "description": "把課表、作業與考試截止日加到 Google Calendar（Deadline 日曆規則）"
+    },
+    {
+      "name": "bash-terminal-progress-ui",
+      "source": "./plugins/bash-terminal-progress-ui",
+      "description": "bash 腳本與安裝程式的 spinner / 進度 UI"
+    }
+  ]
+}
