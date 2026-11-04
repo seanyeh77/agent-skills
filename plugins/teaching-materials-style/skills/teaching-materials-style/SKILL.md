@@ -1,6 +1,6 @@
 ---
-name: "teaching-materials-style"
-description: "SeanYeh's house style for any slide deck, document, note or diagram (talks, reports, proposals, technical docs, teaching). Use for Slidev decks, Notion or other docs, and diagrams in any tool."
+name: teaching-materials-style
+description: SeanYeh's house style for any slide deck, document, note or diagram (talks, reports, proposals, technical docs, teaching). Use for Slidev decks, Notion or other docs, and diagrams in any tool.
 ---
 
 # Presentation and document style
@@ -74,11 +74,14 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 
 ### Titles and wording
 - Titles never centered. Default top-left, content centered in the remaining space; on some slides the title sits right above the content. Section dividers centered horizontally: large teal section number, subsections on the right.
-- Titles concise and formal, never colloquial, never questions. Jokes and analogies go in the body, dialogue boxes or speaker notes.
+- Titles concise and formal, never colloquial, never questions. Jokes and analogies go in the body, dialogue boxes or the script file.
 - All on-slide text (item titles, body, note column, takeaways, tables) uses formal written wording, not vivid colloquial phrases ("版本衝突", not "版本會打架").
 
 ### Layout
-- One concept per slide: title plus one component. Per-click explanations in the right-side note column (330 px, teal left border, NOTE label); full talk script in speaker notes.
+- One concept per slide: title plus one component. Per-click explanations in the right-side note column (330 px, teal left border, NOTE label).
+- No Slidev speaker notes (no `<!-- -->` comments in slides). Every deck comes with a separate Markdown file (for example `SCRIPT.md`) holding the notes and talk script, ordered by slide number and title: for each slide, the note-column points by click step, then the script. Edit the script there, not in the slides.
+- Keep notes short: only the key point of that step, usually "command or option: what it does". Leave a step's note empty when the point is obvious from the screen ("進入 Container", "刪除 Container"); an empty step hides the whole note column, label included. Longer explanations go in the script file.
+- Anything the audience must do ("add 3 items in the browser") appears on the slide itself, for example as the takeaway line, not only in the script file.
 - Layouts: cover; section divider; objectives or agenda (01/02/03); focus slide for a set of items; statement; definition (term left, meaning and example right); two-column compare table; quiz; figure with a one-line teal takeaway; reference table; Bento grid for section and final summaries; end slide naming the next topic or next steps.
 - Never lay several cards, pain points or steps side by side in a horizontal row. Use the focus method: a vertical index on the left with the current item highlighted, one item shown large on the right, advancing on click.
 - Boxes and code frames sharp-cornered with 1.5 to 2 px borders.
@@ -87,6 +90,7 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - Magic Move, line highlight, terminal typing, code-to-diagram sync, before/after diff, annotated commands; step-by-step diagrams carry "Step x of y" and a caption.
 - Terminal typing is fast: about 15 ms per character, long commands done within about 0.8 s.
 - Never animate the same content twice: if one slide reveals a file line by line with explanations, later slides show it all at once.
+- Show a complete file in full only once. If a later slide would repeat it, keep the earlier slide and drop the later one, moving any useful explanation into the script file.
 - No countdown timers.
 
 ### Terminal and code output
@@ -95,12 +99,20 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - Keep lines short so the terminal font does not shrink: trim output to the columns and lines that make the point, mark skipped lines with `...`, and say in the note what was omitted. Don't add display-only flags (such as `--format`) the audience would then have to understand.
 - Use real output from an actual run; keep IDs, sizes and names consistent across every slide that shows the same object.
 - The final click state shows every command typed on that slide (set how many finished commands stay visible accordingly).
+- Output matches what the audience will see in their environment (for example no download messages when images are pre-pulled).
+- Examples that stand for different data look different (a new set of todo items after the old ones were deleted), so the audience does not read them as the same data.
 
 ### Demos and reproducible steps
 - Any command on a slide must run in order from the state earlier slides leave behind: create any file a slide reads on that slide or earlier (with a command, not only "use an editor"), cover the states a repeat run causes (for example a name already in use), and show how to leave interactive sessions (`exit`).
 - Prefer small, fast-to-download images and packages so every demo finishes in seconds.
 - Turn errors people actually hit into "常見錯誤" slides: the real error first, then the fix.
 - When comparing two approaches, use the same command or metric and the same columns for both, ideally the same subject done both ways.
+- Don't expose the infrastructure behind the audience's environment (virtualization platform, internal tools, hosts): describe it in neutral terms such as "提供的 Linux 主機". Presenter-only details stay in the spec or the script file.
+
+### Copying commands
+- Every finished command line in a terminal shows a small copy icon (no text button) only while the pointer is over that line; it copies the command without the prompt and briefly turns into a check mark. Never show it in presenter or print/export mode.
+- Clicking the icon must not take keyboard focus (tabindex -1, prevent focus on mousedown, blur afterwards), so arrow keys and space keep navigating the deck.
+- Publish a command list page next to the deck (for example `commands.html`), generated from the slides' terminal commands at build time so it never drifts: grouped by section and slide title, each command with the same copy icon, commands run inside a container marked as such, demo-only and error slides left out, full files (Dockerfile, compose.yaml) at the end. It reads well at phone width with long commands wrapping. Give its address on the first hands-on slide.
 
 ### Audience questions (when the deck has them)
 - No Slido. Questions sit on the slide as a quiz (A/B/C/D) and the audience answers by show of hands.
@@ -109,6 +121,7 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - Ask only after every concept the question depends on has been presented.
 
 ### Flow
+- Write every deck to be reusable for other audiences and occasions: no wording tied to one event or class (本課程, 學員, TA, 講師示範, 休息 10 分鐘, 分組作業, 今天 3 小時), on slides or in the script file. Use neutral words (接下來, 重點整理, 專案), and put environment-specific steps in the script file with the alternative (for example "on your own laptop, skip the ssh line").
 - Avoid abrupt jumps between consecutive slides; add or reorder a bridging slide.
 - Recap and checkpoint slides must add something (for example a map of what has been built or covered so far); never repeat the slide before them.
 - Discuss with the user before restructuring a section or making other large changes.
@@ -119,6 +132,7 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - Commands shown on slides must actually run; verify them when possible and keep example output faithful to current versions.
 - In Vue template attribute props, write `&amp;lt;` to show a literal `<` (for example `<untagged>`).
 - After scripted edits, review the diff to confirm only the intended slide changed.
+- Test every interactive feature in a real browser, including that slide navigation (arrow keys, space) still works after using it.
 
 ---
 
@@ -146,3 +160,4 @@ Applies whether the diagram is drawn in Miro, generated with Python (matplotlib,
 ### Layout
 - Compact and symmetric. Minimize whitespace without losing content, leaving enough room for lines to route smoothly. Goal: diagrams that look bigger, cleaner and punchier.
 - Export at a resolution that stays sharp on a 1920 x 1080 slide (SVG preferred; PNG at 2x).
+- Edges are never clipped: leave a margin around the canvas at least as wide as the thickest border (pad the SVG viewBox), so strokes on all four sides stay fully visible. Check by screenshotting the diagram alone at 2x.
