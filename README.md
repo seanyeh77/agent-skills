@@ -7,6 +7,7 @@ SeanYeh 的 agent skills（SKILL.md 格式），同時整理成 Claude Code plug
 | `teaching-materials-style` | 簡報與文件風格：Slidev 投影片、Notion 等文件與筆記、各種工具畫的圖（不限教學） |
 | `google-calendar-schedule-entry` | 把課表、作業與考試截止日加到 Google Calendar |
 | `bash-terminal-progress-ui` | bash 腳本與安裝程式的 spinner / 進度 UI |
+| `ui-design-system` | 前端設計系統：網頁、Dashboard、前端介面與 HTML 頁面（規則與元件在 [seanyeh77/ui-design-system](https://github.com/seanyeh77/ui-design-system)） |
 
 ## 安裝（Claude Code）
 
@@ -15,6 +16,7 @@ claude plugin marketplace add seanyeh77/agent-skills
 claude plugin install teaching-materials-style@seanyeh77-skills
 claude plugin install google-calendar-schedule-entry@seanyeh77-skills
 claude plugin install bash-terminal-progress-ui@seanyeh77-skills
+claude plugin install ui-design-system@seanyeh77-skills
 ```
 
 在 session 裡也可以用 `/plugin marketplace add` 和 `/plugin install`。

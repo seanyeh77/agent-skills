@@ -20,6 +20,11 @@
       "name": "bash-terminal-progress-ui",
       "source": "./plugins/bash-terminal-progress-ui",
       "description": "bash 腳本與安裝程式的 spinner / 進度 UI"
+    },
+    {
+      "name": "ui-design-system",
+      "source": "./plugins/ui-design-system",
+      "description": "SeanYeh 的前端設計系統：網頁、Dashboard、前端介面與 HTML 頁面的 token、元件和規則"
     }
   ]
 }
