@@ -5,7 +5,7 @@ description: SeanYeh's web UI design system (seanyeh77/ui-design-system). Use fo
 
 # SeanYeh's UI design system
 
-The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. This skill gives the core rules and tells you where the full rules live. When this file and the repo disagree, the repo wins.
+The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. Do not invent a new palette, font set or component style. This skill gives the core rules and tells you where the full rules live. When this file and the repo disagree, the repo wins.
 
 - Docs site with live previews: https://seanyeh77.github.io/ui-design-system/
 - Index of every published file (read this first): https://seanyeh77.github.io/ui-design-system/llms.txt
@@ -39,13 +39,16 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 - Look: warm-gray neutrals, one blue accent `#2457d6` (user-adjustable), compact density, soft shadows instead of borders for cards, medium radii. Light and dark themes, auto follows `prefers-color-scheme`; root gets `data-theme="light"` or `"dark"`.
 - Type: Inter + Noto Sans TC for text, Geist Mono only for numbers, codes and small labels. Body 16 px, line height 1.65, scale 1.25, headings weight 700. Tabular numbers in tables.
 - Controls: height 40 px, touch target 48 px. Primary button solid accent, at most one per section; secondary outlined; danger solid red and always confirmed in a Dialog. Button labels are verbs only. Never a native `<select>`: custom menu, with search above 8 options. Labels above fields, required fields get a red asterisk, forms are two columns from 960 px.
-- Layout: dashboards use a collapsible sidebar (240 px, 72 px collapsed) plus top bar; showcase pages use top navigation only. 12-column grid, 32 px section gaps, bottom tab bar on phones. Breakpoints 600, 960, 1280 px.
+- Layout: dashboards use a collapsible sidebar (240 px, 72 px collapsed) plus top bar; showcase pages use top navigation only. 12-column grid, 32 px section gaps, bottom tab bar on phones. Breakpoints 600, 960, 1280 px. The sidebar collapse button sits bottom-left and shows an icon only.
+- Headings and table headers never wrap.
+- Icons: Phosphor, 2 px stroke, 20 px; the selected state switches to the filled icon.
 - Tables: gray bold sticky header, 48 px rows, zebra plus grid lines, numbers right-aligned with the unit after each number, sort arrows and row checkboxes appear on hover, page numbers for paging, rows become cards on phones.
 - Feedback: skeletons shown immediately while loading; toasts bottom-right, 3 s, with Undo; dialogs centered, 400 px, blurred backdrop, secondary button left and primary right.
-- Formats: dates `2026/11/04（三）`, relative time within a week, 24-hour clock; amounts `NT$ 1,280`; file sizes `186 KB`, `54.9 MB`. Use `UI.format` and `UI.t()`.
+- Formats: dates `2026/11/04（三）`, relative time within a week, 24-hour clock; amounts `NT$ 1,280`; file sizes `186 KB`, `54.9 MB`; large numbers are abbreviated (萬, 億) only in KPI cards. Use `UI.format` and `UI.t()`.
 - Copy: Traditional Chinese UI text; error messages state the cause and the fix.
 - Motion: hover 150 ms, tabs and switches 300 ms, theme change 350 ms, entrance 700 ms staggered 90 ms; tab and sidebar indicators move with a stretching "droplet" effect.
-- Items marked 看情況 in the docs are situational, not rules: pick per context and say which you picked.
+- Tables, filters, overlays, forms, data viz, tree lists and page templates have fixed choices: follow the component README instead of re-deciding them.
+- Items marked 看情況 in the docs are situational, not rules: pick the option the README's condition calls for (for example `TreeList expand: 'single'` when folders are many and messy) and say which you picked.
 
 ## Fallback tokens
 
