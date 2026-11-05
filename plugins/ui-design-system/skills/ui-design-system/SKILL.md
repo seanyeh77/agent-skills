@@ -14,7 +14,7 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 ## When it applies
 
 - Any web UI: pages, dashboards, settings pages, login pages, internal tools, React or plain HTML, HTML artifacts and page mockups. Use it unless SeanYeh asks for a different look.
-- Not for Slidev decks, Notion docs or teaching diagrams: those follow the `teaching-materials-style` skill. A teaching theme preset for this system is planned; until it exists, keep the two separate.
+- Not for Slidev decks, Notion docs or teaching diagrams: those follow the `teaching-materials-style` skill. A "teaching" theme preset that matches that style exactly (teal `#0f766e`, sharp corners, Literata titles, light only) is decided but not built yet; until it exists, keep the two separate.
 
 ## How to use it
 
@@ -74,3 +74,5 @@ Spacing (px): space-1 4, space-2 8, space-3 12, space-4 16, space-5 20, space-6 
 ## Changing the design system
 
 Work in a clone of `seanyeh77/ui-design-system` and follow its `AGENTS.md`: edit `tokens/tokens.json` then run `python3 scripts/build_tokens.py`; components live in `dist/bundle.js` and `dist/bundle.css` with docs in `components/<Name>/README.md`; record only choices SeanYeh confirmed in `docs/guidelines.md` and `docs/decisions.md`.
+
+New design decisions are SeanYeh's: he picks them from option labs with a live demo for every choice. Propose options instead of changing tokens, rules or component behavior on your own, and flag any default you pick as yours. Commits never carry Claude co-author or Claude-Session trailers.
