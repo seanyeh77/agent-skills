@@ -50,6 +50,21 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 - Tables, filters, overlays, forms, data viz, tree lists and page templates have fixed choices: follow the component README instead of re-deciding them.
 - Items marked 看情況 in the docs are situational, not rules: pick the option the README's condition calls for (for example `TreeList expand: 'single'` when folders are many and messy) and say which you picked.
 
+## Before you finish
+
+Check the page against this list, at 390 px and 1280 px wide, in light and dark. Take a screenshot if you can.
+
+- Components: wherever `window.UI` has a component for the job, it is used and its README was read. Nothing is hand-built that a component already covers.
+- Fonts: Geist Mono only on numbers, code, file paths and IDs, never on a Chinese sentence or a whole meta line.
+- Sizes: body text is one size; secondary text is one step smaller. No ad-hoc sizes for a single row.
+- Wrapping: no label, heading, table header, tab or button text wraps. Widen it, shorten it, or truncate with an ellipsis and a tooltip.
+- Markdown: rendered, never shown raw. No visible backticks, asterisks or `#`; code inside a sentence uses the inline code style.
+- Titles: the page title appears once, in the top bar or as the page heading, not both.
+- Links: file paths, line references, IDs and anything else that points somewhere are links.
+- Status: shown with `UI.Badge` or the component's own status style, never by color alone.
+- Long lists of results: items that need attention (errors, to confirm) come first or can be filtered from the summary.
+- Phones: nothing overflows the screen; long text is left-aligned; touch targets are at least 48 px.
+
 ## Fallback tokens
 
 Use only when the published files cannot be loaded. Values are light / dark.
