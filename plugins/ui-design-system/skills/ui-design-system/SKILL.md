@@ -23,7 +23,7 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 2. Load the published CSS and JS instead of re-creating values:
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://seanyeh77.github.io/ui-design-system/dist/fonts.css">
 <link rel="stylesheet" href="https://seanyeh77.github.io/ui-design-system/dist/tokens.css">
 <link rel="stylesheet" href="https://seanyeh77.github.io/ui-design-system/dist/bundle.css">
 <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
@@ -31,7 +31,7 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 <script src="https://seanyeh77.github.io/ui-design-system/dist/bundle.js"></script>
 ```
 
-   Projects with a build step (Vite and similar): vendor `dist/tokens.css`, `bundle.css`, `bundle.js` and `index.d.ts` from one commit into the project and record the commit. In one module, set `window.React` and `window.ReactDOM` (merge `react-dom` and `react-dom/client`), then `await import()` the bundle; React 18 and 19 both work. The exact snippet is under "Projects with a build step" in `AGENTS.md`. A `?v=` query does not pin a version: the docs site always serves the latest `main`. Once the npm packages (`@seanyeh77/*`) exist, prefer them.
+   Projects with a build step (Vite and similar): install the ES module package, `npm i react react-dom github:seanyeh77/ui-design-system#<commit or tag>` (name `@seanyeh77/ui`, React 18 or 19 as peer dependencies; on npm once published). Import `@seanyeh77/ui/fonts.css`, `tokens.css` and `bundle.css`, then the components by name: `import { Button } from '@seanyeh77/ui'`. Fonts are self-hosted, so pages work offline.
 3. Use components from `window.UI` (props in `dist/index.d.ts`) instead of hand-building them. Call `UI.initTheme()` once; `UI.setTheme('light' | 'dark' | 'auto')`, `UI.setAccent(hex)`. Icons: `h(UI.Icon, { name: 'house' })` with Phosphor names.
 4. Your own CSS uses token variables (`var(--surface)`, `var(--space-4)`, `var(--radius-md)`), never raw values that have a token.
 5. If the docs site cannot be reached (sandboxed session, no network), say so, build from the fallback below, and write the same token names as CSS variables so the page can switch to `tokens.css` later.
@@ -40,7 +40,7 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 
 - Look: warm-gray neutrals, one blue accent `#2457d6` (user-adjustable), compact density, soft shadows instead of borders for cards, medium radii. Light and dark themes, auto follows `prefers-color-scheme`; root gets `data-theme="light"` or `"dark"`.
 - Type: Inter + Noto Sans TC for text, Geist Mono only for numbers, codes and small labels. Body 16 px, line height 1.65, scale 1.25, headings weight 700. Tabular numbers in tables.
-- Controls: height 40 px, touch target 48 px. Primary button solid accent, at most one per section; secondary outlined; danger solid red and always confirmed in a Dialog. Button labels are verbs only. Never a native `<select>`: custom menu, with search above 8 options. Labels above fields, required fields get a red asterisk, forms are two columns from 960 px.
+- Controls: height 40 px, touch target 48 px (inputs are 48 px tall under 600 px wide). Primary button solid accent, at most one per section; secondary outlined; danger solid red and always confirmed in a Dialog. Button labels are verbs only. Never a native `<select>`: custom menu, with search above 8 options. Labels above fields, required fields get a red asterisk, forms are two columns from 960 px.
 - Layout: dashboards use a collapsible sidebar (240 px, 72 px collapsed) plus top bar; showcase pages use top navigation only. 12-column grid, 32 px section gaps, bottom tab bar on phones. Breakpoints 600, 960, 1280 px. The sidebar collapse button sits bottom-left and shows an icon only.
 - Headings and table headers never wrap.
 - Icons: Phosphor, 2 px stroke, 20 px; the selected state switches to the filled icon.
@@ -49,6 +49,7 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 - Formats: dates `2026/11/04（三）`, relative time within a week, 24-hour clock; amounts `NT$ 1,280`; file sizes `186 KB`, `54.9 MB`; large numbers are abbreviated (萬, 億) only in KPI cards. Use `UI.format` and `UI.t()`.
 - Copy: Traditional Chinese UI text; error messages state the cause and the fix. Only the point, in formal written wording: explanations at most 2 short sentences, nothing the screen already shows is said again, the same thing is said once, no question-style titles or links (「重看導覽」, not 「第一次使用？重看導覽」; confirm dialog titles may ask), common English terms kept and explained with `UI.Term`, long explanations moved to a linked doc.
 - Motion: hover 150 ms, tabs and switches 300 ms, theme change 350 ms, entrance 700 ms staggered 90 ms; tab and sidebar indicators move with a stretching "droplet" effect.
+- Source code with line numbers: `UI.CodeView`. Architecture diagrams (boxes and arrows): the `ui-graph-*` classes with `UI.GraphDefs` and `UI.GraphLegend`, inferred relations dashed. In trees, label only the exceptional relations and explain the default once.
 - Tables, filters, overlays, forms, data viz, tree lists and page templates have fixed choices: follow the component README instead of re-deciding them.
 - Items marked 看情況 in the docs are situational, not rules: pick the option the README's condition calls for (for example `TreeList expand: 'single'` when folders are many and messy) and say which you picked.
 
