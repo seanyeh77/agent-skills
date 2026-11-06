@@ -65,6 +65,7 @@ In a clone of the repo, `python3 scripts/check_page.py <file or URL> --shots sho
 - Wrapping: no label, heading, table header, tab or button text wraps. Widen it, shorten it, or truncate with an ellipsis and a tooltip.
 - Markdown: rendered, never shown raw. No visible backticks, asterisks or `#`; code inside a sentence uses the inline code style.
 - Text: only the point, in formal written Chinese. Explanations are at most 2 short sentences; nothing the screen already shows is said again; no question-style titles or links. See 文字語氣 in `docs/guidelines.md`.
+- Cards: no card inside a card (one shadow per block). Blocks use `UI.Card`; TreeList, KpiCard, Alert and SettingsSection are already cards and lose their shadow inside `UI.Card`.
 - Titles: the page title appears once, in the top bar or as the page heading, not both.
 - Links: file paths, line references, IDs and anything else that points somewhere are links.
 - Status: shown with `UI.Badge` or the component's own status style, never by color alone.
