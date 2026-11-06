@@ -1,6 +1,6 @@
 ---
-name: "ui-design-system"
-description: "SeanYeh's web UI design system (seanyeh77/ui-design-system). Use for any web page, frontend, dashboard, admin panel, tool UI or HTML artifact he asks for, and when changing that repo."
+name: ui-design-system
+description: SeanYeh's web UI design system (seanyeh77/ui-design-system). Use for any web page, frontend, dashboard, admin panel, tool UI or HTML artifact he asks for, and when changing that repo.
 ---
 
 # SeanYeh's UI design system
@@ -97,6 +97,6 @@ Spacing (px): space-1 4, space-2 8, space-3 12, space-4 16, space-5 20, space-6 
 
 ## Changing the design system
 
-Work in a clone of `seanyeh77/ui-design-system` and follow its `AGENTS.md`: edit `tokens/tokens.json` then run `python3 scripts/build_tokens.py`; components live in `dist/bundle.js` and `dist/bundle.css` with docs in `components/<Name>/README.md`; record only choices SeanYeh confirmed in `docs/guidelines.md` and `docs/decisions.md`.
+Work in a clone of `seanyeh77/ui-design-system` and follow its `AGENTS.md`: edit `tokens/tokens.json` then run `python3 scripts/build_tokens.py`; components live in `dist/bundle.js` and `dist/bundle.css` with docs in `components/<Name>/README.md`; after changing them run `python3 scripts/ui_keys.py --write` and `python3 scripts/build_esm.py` (CI checks both); record only choices SeanYeh confirmed in `docs/guidelines.md` and `docs/decisions.md`.
 
 New design decisions are SeanYeh's: he picks them from option labs with a live demo for every choice. Propose options instead of changing tokens, rules or component behavior on your own, and flag any default you pick as yours. Commits never carry Claude co-author or Claude-Session trailers.
