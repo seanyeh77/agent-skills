@@ -1,11 +1,11 @@
 ---
-name: ui-design-system
-description: SeanYeh's web UI design system (seanyeh77/ui-design-system). Use for any web page, frontend, dashboard, admin panel, tool UI or HTML artifact he asks for, and when changing that repo.
+name: "ui-design-system"
+description: "SeanYeh's web UI design system (seanyeh77/ui-design-system). Use for any web page, frontend, dashboard, admin panel, tool UI or HTML artifact he asks for, and when changing that repo."
 ---
 
 # SeanYeh's UI design system
 
-The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. Do not invent a new palette, font set or component style. This skill gives the core rules and tells you where the full rules live. When this file and the repo disagree, the repo wins.
+The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. Do not invent a new palette, font set or component style. This skill gives the core rules and tells you where the full rules live. When this file and the repo disagree, the repo wins. The master copy of this skill is `plugins/ui-design-system/skills/ui-design-system/SKILL.md` in `seanyeh77/agent-skills`.
 
 - Docs site with live previews: https://seanyeh77.github.io/ui-design-system/
 - Index of every published file (read this first): https://seanyeh77.github.io/ui-design-system/llms.txt
@@ -14,7 +14,8 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 ## When it applies
 
 - Any web UI: pages, dashboards, settings pages, login pages, internal tools, React or plain HTML, HTML artifacts and page mockups. Use it unless SeanYeh asks for a different look.
-- Slidev decks use only its tokens, through the `teaching` preset (`data-theme="teaching"` in `tokens.css`): warm-gray neutrals and Inter / Geist Mono from this system, plus teal `#0f766e`, 0 px radius, no shadows and 1.5 px borders, light only. Deck CSS reads token names only. Slide layout and rules, Notion docs and teaching diagrams follow the `teaching-materials-style` skill.
+- Not for Notion docs or teaching diagrams: those follow the `teaching-materials-style` skill.
+- Slidev decks use the "teaching" theme preset, defined as the hybrid option SeanYeh chose: the design system's warm-gray neutrals (bg #fcfbfb, surface #ffffff, surface-sub #f6f5f4, ink #171512, ink-muted #6d645a, line #e2dfdc) and fonts (Inter + Noto Sans TC for titles and body, Geist Mono for code), combined with the slide style's teal accent `#0f766e` (accent-soft #e3f2ef), radius 0 px, no shadows, 1.5 px borders, light only. Deck CSS reads the token names; the preset supplies the values. Layout, sizes and slide rules still come from `teaching-materials-style`. The preset is built: `data-theme="teaching"` in `tokens.css`, defined under `presets` in `tokens/tokens.json`; never hard-code its values in a deck.
 
 ## How to use it
 
@@ -30,6 +31,7 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 <script src="https://seanyeh77.github.io/ui-design-system/dist/bundle.js"></script>
 ```
 
+   Projects with a build step (Vite and similar): vendor `dist/tokens.css`, `bundle.css`, `bundle.js` and `index.d.ts` from one commit into the project and record the commit. In one module, set `window.React` and `window.ReactDOM` (merge `react-dom` and `react-dom/client`), then `await import()` the bundle; React 18 and 19 both work. The exact snippet is under "Projects with a build step" in `AGENTS.md`. A `?v=` query does not pin a version: the docs site always serves the latest `main`. Once the npm packages (`@seanyeh77/*`) exist, prefer them.
 3. Use components from `window.UI` (props in `dist/index.d.ts`) instead of hand-building them. Call `UI.initTheme()` once; `UI.setTheme('light' | 'dark' | 'auto')`, `UI.setAccent(hex)`. Icons: `h(UI.Icon, { name: 'house' })` with Phosphor names.
 4. Your own CSS uses token variables (`var(--surface)`, `var(--space-4)`, `var(--radius-md)`), never raw values that have a token.
 5. If the docs site cannot be reached (sandboxed session, no network), say so, build from the fallback below, and write the same token names as CSS variables so the page can switch to `tokens.css` later.
@@ -45,7 +47,7 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 - Tables: gray bold sticky header, 48 px rows, zebra plus grid lines, numbers right-aligned with the unit after each number, sort arrows and row checkboxes appear on hover, page numbers for paging, rows become cards on phones.
 - Feedback: skeletons shown immediately while loading; toasts bottom-right, 3 s, with Undo; dialogs centered, 400 px, blurred backdrop, secondary button left and primary right.
 - Formats: dates `2026/11/04（三）`, relative time within a week, 24-hour clock; amounts `NT$ 1,280`; file sizes `186 KB`, `54.9 MB`; large numbers are abbreviated (萬, 億) only in KPI cards. Use `UI.format` and `UI.t()`.
-- Copy: Traditional Chinese UI text; error messages state the cause and the fix.
+- Copy: Traditional Chinese UI text; error messages state the cause and the fix. Only the point, in formal written wording: explanations at most 2 short sentences, nothing the screen already shows is said again, the same thing is said once, no question-style titles or links (「重看導覽」, not 「第一次使用？重看導覽」; confirm dialog titles may ask), common English terms kept and explained with `UI.Term`, long explanations moved to a linked doc.
 - Motion: hover 150 ms, tabs and switches 300 ms, theme change 350 ms, entrance 700 ms staggered 90 ms; tab and sidebar indicators move with a stretching "droplet" effect.
 - Tables, filters, overlays, forms, data viz, tree lists and page templates have fixed choices: follow the component README instead of re-deciding them.
 - Items marked 看情況 in the docs are situational, not rules: pick the option the README's condition calls for (for example `TreeList expand: 'single'` when folders are many and messy) and say which you picked.
@@ -53,6 +55,8 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 ## Before you finish
 
 Check the page against this list, at 390 px and 1280 px wide, in light and dark. Take a screenshot if you can.
+
+In a clone of the repo, `python3 scripts/check_page.py <file or URL> --shots shots/` does the automatic part (console errors, overflow at 390 px, touch targets under 48 px) and exits with 1 when something fails; look at the screenshots for the rest.
 
 - Components: wherever `window.UI` has a component for the job, it is used and its README was read. Nothing is hand-built that a component already covers.
 - Fonts: Geist Mono only on numbers, code, file paths and IDs, never on a Chinese sentence or a whole meta line.
@@ -64,7 +68,7 @@ Check the page against this list, at 390 px and 1280 px wide, in light and dark.
 - Links: file paths, line references, IDs and anything else that points somewhere are links.
 - Status: shown with `UI.Badge` or the component's own status style, never by color alone.
 - Long lists of results: items that need attention (errors, to confirm) come first or can be filtered from the summary.
-- Phones: nothing overflows the screen; long text is left-aligned; touch targets are at least 48 px.
+- Phones: nothing overflows the screen; long text is left-aligned; touch targets are at least 48 px (components get this automatically on touch screens; text links inside a sentence are exempt).
 
 ## Fallback tokens
 
