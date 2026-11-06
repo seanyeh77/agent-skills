@@ -14,7 +14,7 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 ## When it applies
 
 - Any web UI: pages, dashboards, settings pages, login pages, internal tools, React or plain HTML, HTML artifacts and page mockups. Use it unless SeanYeh asks for a different look.
-- Not for Slidev decks, Notion docs or teaching diagrams: those follow the `teaching-materials-style` skill. A "teaching" theme preset that matches that style exactly (teal `#0f766e`, sharp corners, Literata titles, light only) is decided but not built yet; until it exists, keep the two separate.
+- Slidev decks use only its tokens, through the `teaching` preset (`data-theme="teaching"` in `tokens.css`): warm-gray neutrals and Inter / Geist Mono from this system, plus teal `#0f766e`, 0 px radius, no shadows and 1.5 px borders, light only. Deck CSS reads token names only. Slide layout and rules, Notion docs and teaching diagrams follow the `teaching-materials-style` skill.
 
 ## How to use it
 
