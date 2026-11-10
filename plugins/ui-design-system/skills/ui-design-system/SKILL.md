@@ -15,24 +15,24 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 
 - Any web UI: pages, dashboards, settings pages, login pages, internal tools, React or plain HTML, HTML artifacts and page mockups. Use it unless SeanYeh asks for a different look.
 - Not for Notion docs or teaching diagrams: those follow the `teaching-materials-style` skill.
-- Slidev decks use the "teaching" theme preset, defined as the hybrid option SeanYeh chose: the design system's warm-gray neutrals (bg #fcfbfb, surface #ffffff, surface-sub #f6f5f4, ink #171512, ink-muted #6d645a, line #e2dfdc) and fonts (Inter + Noto Sans TC for titles and body, Geist Mono for code), combined with the slide style's teal accent `#0f766e` (accent-soft #e3f2ef), radius 0 px, no shadows, 1.5 px borders, light only. Deck CSS reads the token names; the preset supplies the values. Layout, sizes and slide rules still come from `teaching-materials-style`. The preset is built: `data-theme="teaching"` in `tokens.css`, defined under `presets` in `tokens/tokens.json`; never hard-code its values in a deck.
+- Slidev decks use the "teaching" theme preset, defined as the hybrid option SeanYeh chose: the design system's warm-gray neutrals (bg #fcfbfb, surface #ffffff, surface-sub #f6f5f4, ink #171512, ink-muted #6d645a, line #e2dfdc) and fonts (Inter + Noto Sans TC for titles and body, Geist Mono for code), combined with the slide style's teal accent `#0f766e` (accent-soft #e3f2ef), radius 0 px, no shadows, 1.5 px borders, light only. Deck CSS reads the token names; the preset supplies the values. Layout, sizes and slide rules still come from `teaching-materials-style`. The preset is built: `data-theme="teaching"` in `tokens.css`, defined under `presets` in `tokens/tokens.json`; never hard-code its values in a deck. A deck SeanYeh asks for in the ui-design-system look uses the default light theme instead, with the accent chosen by each viewer; the details are under "UI variant" in `teaching-materials-style`.
 
 ## How to use it
 
 1. Fetch `llms.txt`, then `AGENTS.md` and `md/guidelines.md`. Before using a component, fetch its `md/<Name>.md`. Fetch `md/layout.md` for page structure and `md/motion.md` for animation.
-2. Load the published CSS and JS instead of re-creating values:
+2. Load the published CSS and JS instead of re-creating values. Without a build step, one script brings React 19 and every component:
 
 ```html
+<meta charset="utf-8">
 <link rel="stylesheet" href="https://seanyeh77.github.io/ui-design-system/dist/fonts.css">
 <link rel="stylesheet" href="https://seanyeh77.github.io/ui-design-system/dist/tokens.css">
-<link rel="stylesheet" href="https://seanyeh77.github.io/ui-design-system/dist/bundle.css">
-<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<link rel="stylesheet" href="https://seanyeh77.github.io/ui-design-system/dist/styles.css">
+<div id="root"></div>
 <script src="https://seanyeh77.github.io/ui-design-system/dist/bundle.js"></script>
 ```
 
-   Projects with a build step (Vite and similar): install the ES module package, `npm i react react-dom github:seanyeh77/ui-design-system#<commit or tag>` (name `@seanyeh77/ui`, React 18 or 19 as peer dependencies; on npm once published). Import `@seanyeh77/ui/fonts.css`, `tokens.css` and `bundle.css`, then the components by name: `import { Button } from '@seanyeh77/ui'`. Fonts are self-hosted, so pages work offline.
-3. Use components from `window.UI` (props in `dist/index.d.ts`) instead of hand-building them. Call `UI.initTheme()` once; `UI.setTheme('light' | 'dark' | 'auto')`, `UI.setAccent(hex)`. Icons: `h(UI.Icon, { name: 'house' })` with Phosphor names.
+   Projects with a build step (Vite, Next.js): `npm i react react-dom @seanyeh77/ui` (React 19 only; until on npm, pack the packages from a clone), import `@seanyeh77/ui/fonts.css`, `tokens.css` and `styles.css`, then components by name. Add `@seanyeh77/eslint-plugin-ui` (`ui.configs.recommended`) and `@seanyeh77/ui-cli`. Server code that only formats imports `@seanyeh77/ui/format`. Page templates: `npx shadcn@latest add https://seanyeh77.github.io/ui-design-system/r/<dashboard|list-detail|settings|login>.json` (needs `components.json`), or copy `files[].content` from that JSON.
+3. Use components (`window.UI` without a build step; props in `dist/index.d.ts`) instead of hand-building them. Frame dashboards with `AppShell`, lay out with `Page` and `Grid`, one `Card` per block. Types are guards (danger actions need `confirm`; icon names and DataTable column keys are checked): fix type errors and dev-console warnings instead of working around them. Call `UI.initTheme()` once; `UI.setTheme('light' | 'dark' | 'auto')`, `UI.setAccent(hex)`. Icons: `h(UI.Icon, { name: 'house' })` with Phosphor names.
 4. Your own CSS uses token variables (`var(--surface)`, `var(--space-4)`, `var(--radius-md)`), never raw values that have a token.
 5. If the docs site cannot be reached (sandboxed session, no network), say so, build from the fallback below, and write the same token names as CSS variables so the page can switch to `tokens.css` later.
 
@@ -57,7 +57,7 @@ The source of truth is the repo `seanyeh77/ui-design-system` and its docs site. 
 
 Check the page against this list, at 390 px and 1280 px wide, in light and dark. Take a screenshot if you can.
 
-In a clone of the repo, `python3 scripts/check_page.py <file or URL> --shots shots/` does the automatic part (console errors, overflow at 390 px, touch targets under 48 px) and exits with 1 when something fails; look at the screenshots for the rest.
+`npx @seanyeh77/ui-cli check <file or URL> --shots shots/` does the automatic part (console errors, overflow at 390 px, touch targets under 48 px, card in a card, raw Markdown, native controls, wrapped text). Not plain `npx ui`, which is an unrelated package; it needs `npx playwright install chromium` or `CHROMIUM_PATH`. Exit 1 means problems, 2 means a page could not be checked; look at the screenshots for the rest.
 
 - Components: wherever `window.UI` has a component for the job, it is used and its README was read. Nothing is hand-built that a component already covers.
 - Fonts: Geist Mono only on numbers, code, file paths and IDs, never on a Chinese sentence or a whole meta line.
@@ -98,6 +98,6 @@ Spacing (px): space-1 4, space-2 8, space-3 12, space-4 16, space-5 20, space-6 
 
 ## Changing the design system
 
-Work in a clone of `seanyeh77/ui-design-system` and follow its `AGENTS.md`: edit `tokens/tokens.json` then run `python3 scripts/build_tokens.py`; components live in `dist/bundle.js` and `dist/bundle.css` with docs in `components/<Name>/README.md`; after changing them run `python3 scripts/ui_keys.py --write` and `python3 scripts/build_esm.py` (CI checks both); record only choices SeanYeh confirmed in `docs/guidelines.md` and `docs/decisions.md`.
+Work in a clone of `seanyeh77/ui-design-system` and follow its `AGENTS.md`. It is a pnpm workspace: `pnpm install`, then `pnpm check` (build, typecheck, lint, tests). Tokens are in `packages/tokens/tokens.json`; each component is `packages/ui/src/components/<Name>/` with `<Name>.tsx`, `README.md`, a story and `preview.html`; templates are in `packages/blocks`; `pnpm site` builds the docs site. Add a changeset for every change to a published package. Record only choices SeanYeh confirmed in `docs/guidelines.md` and `docs/decisions.md`.
 
 New design decisions are SeanYeh's: he picks them from option labs with a live demo for every choice. Propose options instead of changing tokens, rules or component behavior on your own, and flag any default you pick as yours. Commits never carry Claude co-author or Claude-Session trailers.

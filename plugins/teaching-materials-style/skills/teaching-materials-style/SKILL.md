@@ -54,16 +54,21 @@ Throughout, "audience" means whoever reads or watches: students, reviewers, team
 
 ## 2. Slide decks (Slidev, Textbook theme)
 
-Applies to any deck: lectures and workshops, conference or club talks, project and competition reports, proposals. Reference implementation: github.com/seanyeh77/docker-workshop (slides/: layouts, components, styles); reuse its layouts and components for a new deck.
+Applies to any deck: lectures and workshops, conference or club talks, project and competition reports, proposals. Reference implementation: github.com/seanyeh77/docker-workshop (slides/: layouts, components, styles); reuse its layouts and components for a new deck. docker-workshop predates the hybrid palette below: when reusing its styles, replace its hard-coded colors and fonts (--tb-* variables) with the design-system tokens listed under Palette and fonts.
 
 ### Setup
 - Slidev, custom "Textbook" theme, light backgrounds only (dark styles such as terminal or blueprint were rejected).
 - Canvas 1920 x 1080, routerMode hash, transition none, drawings disabled, `titleTemplate: '%s'`.
 - Deploy with GitHub Pages via GitHub Actions (`slidev build --base /<repo>/`).
+- A host page (for example the artifact viewer) may set a dark theme on `<html>`, which overrides tokens defined at `:root`. Pin the deck's tokens and the `--tb-*` mapping on `body, #app`, imported after the theme CSS, and check the deck once with a forced dark host theme.
+- Page transitions stay off unless asked for. When a deck uses them: chrome (progress bar, chapter label, footer) stays still, the screen never goes blank and the two pages are never both half transparent (the new page fades in over the opaque old one), text snapshots keep their natural size instead of being stretched, and `prefers-reduced-motion` turns every transition off.
 
-### Palette and fonts
-- Ink #20262e, muted #66707c, accent teal #0f766e (chapter labels, progress bar, list markers, note border, correct answers), rules #e2e5e9, code background #f5f8f8.
-- Titles: Literata + Noto Sans TC, weight 600. Body: Source Sans 3 + Iansui. Code: IBM Plex Mono + Iansui.
+### Palette and fonts (hybrid preset of the design system)
+- Decks use the "teaching" preset of seanyeh77/ui-design-system, chosen as the hybrid option: neutrals and fonts come from the design system, while the teal accent, sharp corners and thin borders stay from the slide style. Deck CSS reads the design-system token names (--bg, --surface, --surface-sub, --ink, --ink-muted, --line, --line-strong, --accent, --accent-soft, --radius-sm, --radius-md, --font-sans, --font-mono) and never hard-codes these values; the preset supplies them.
+- Values: bg #fcfbfb, surface #ffffff, code and terminal-bar background (surface-sub) #f6f5f4, ink #171512, muted (ink-muted) #6d645a, rules (line) #e2dfdc, heavy rules and dividers #171512, accent teal #0f766e (chapter labels, progress bar, list markers, note border, correct answers), accent-soft #e3f2ef (highlighted code lines, soft fills), inactive focus-index items #aca49a.
+- Radius 0 everywhere (radius-sm and radius-md are 0 px in this preset); no shadows; frames keep 1.5 px borders in the line color.
+- Fonts: titles Inter + Noto Sans TC, weight 700. Body Inter + Noto Sans TC. Code, terminal and mono labels Geist Mono + Noto Sans TC.
+- Diagram fills keep the diagram palette (#aeacac, #e7e7e7, #adf0c7, #6eea9e) and do not follow the theme.
 - Sizes (px): title 54, body and lists 40, definitions 40, quiz options 35, cards 33, compare tables 34, step text 30, right-side note 30, code blocks 31, terminal 29, footer 18, chapter label 19.
 
 ### Fixed elements on every slide
@@ -84,10 +89,19 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - Anything the audience must do ("add 3 items in the browser") appears on the slide itself, for example as the takeaway line, not only in the script file.
 - Layouts: cover; section divider; objectives or agenda (01/02/03); focus slide for a set of items; statement; definition (term left, meaning and example right); two-column compare table; quiz; figure with a one-line teal takeaway; reference table; Bento grid for section and final summaries; end slide naming the next topic or next steps.
 - Never lay several cards, pain points or steps side by side in a horizontal row. Use the focus method: a vertical index on the left with the current item highlighted, one item shown large on the right, advancing on click.
+- Headings, quiz questions, table headers, row labels, focus-index items and tile labels never wrap: shorten the wording or widen the column (size label columns to their content).
+- Compare tables: name the first column's header (項目, 情況); when both sides have the same value, merge the two cells into one left-aligned cell spanning both columns. No 「同左」 and no badge or chip announcing it (such as 「兩者相同」): the merged cell says it.
+- Rows revealed per click keep their row label, cell background and grid lines visible from the start; only the values appear on click.
+- Never dim text with opacity to mean "not yet" or "not chosen"; use the muted ink color, so every visible text keeps at least 4.5:1 contrast.
+- Smallest on-slide labels (file tags, tile labels, keyword chips, NEXT label) are at least 22 px.
+- A rule or explanation that would otherwise be a paragraph becomes something the audience can see, tried in this order: a step-by-step diagram (the mechanism, with "Step x of y"); a real example or output shown first with the rule as a one-line takeaway; short sentences revealed one per click (focus layout, cause and effect as two steps); a condition-and-result table revealed row by row; before/after diff or magic move; a quiz whose explanation is the rule. Diagram colors stay the fixed diagram palette in every theme; only the one highlighted element per step follows the accent.
+- Only when none of these fits, use the statement layout: the heading is the complete conclusion in one line, with at most one short supporting sentence in muted text below it. The sentence sits directly on the page, left-aligned at the content edge and vertically centered: no card, shadow, box or colored bar around it. Definitions, exceptions and background go in the script file.
 - Boxes and code frames sharp-cornered with 1.5 to 2 px borders.
 
 ### Animation
 - Magic Move, line highlight, terminal typing, code-to-diagram sync, before/after diff, annotated commands; step-by-step diagrams carry "Step x of y" and a caption.
+- Step-by-step SVG diagrams are never scaled below 1x (box text stays 24 px): when a diagram has many rows, tighten the row pitch (down to 56 px, boxes 44 px) instead of shrinking the whole picture.
+- Highlighted code lines form one continuous band across the block width, with no gaps between lines or per-token patches.
 - Terminal typing is fast: about 15 ms per character, long commands done within about 0.8 s.
 - Never animate the same content twice: if one slide reveals a file line by line with explanations, later slides show it all at once.
 - Show a complete file in full only once. If a later slide would repeat it, keep the earlier slide and drop the later one, moving any useful explanation into the script file.
@@ -97,6 +111,7 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - The prompt is a plain `$`. Inside a container or remote shell, use that shell's own prompt (for example `/ # `) so the audience can tell where the command runs.
 - When the working directory matters (clone, build, a file created on the slide, compose), show it in the terminal title bar, never inside the prompt, and update it after each `cd`. Other terminal slides leave the bar empty.
 - Keep lines short so the terminal font does not shrink: trim output to the columns and lines that make the point, mark skipped lines with `...`, and say in the note what was omitted. Don't add display-only flags (such as `--format`) the audience would then have to understand.
+- When output is filtered with grep, also match the header line (for example `netstat -tan | grep -E 'Proto|9877'`) so the column names stay on screen, and say in the note what each output snapshot corresponds to (before connect, connected, after close).
 - Use real output from an actual run; keep IDs, sizes and names consistent across every slide that shows the same object.
 - The final click state shows every command typed on that slide (set how many finished commands stay visible accordingly).
 - Output matches what the audience will see in their environment (for example no download messages when images are pre-pulled).
@@ -116,9 +131,10 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 
 ### Audience questions (when the deck has them)
 - No Slido. Questions sit on the slide as a quiz (A/B/C/D) and the audience answers by show of hands.
-- The next click reveals the answer: correct option turns teal and a short explanation fades in.
+- The next click reveals the answer: the correct option gets an accent border, a soft accent fill and a filled letter key, the other options switch to the muted text color, and a short explanation fades in. No check mark, icon or label on the answer.
+- The question fits on one line; shorten it (quiz questions may drop to 46 px) rather than wrap.
 - Each question sets up content that comes later (a later demo or section verifies it); never a throwaway or joke question.
-- Ask only after every concept the question depends on has been presented.
+- Ask only after every concept the question depends on has been presented, including the rule the answer hinges on (for example "count 歸 0 才送出 FIN" before a question about a missing close) and every term in the options (CLOSE_WAIT, signal, disposition). Add a statement or definition slide right before the question when needed.
 
 ### Flow
 - Write every deck to be reusable for other audiences and occasions: no wording tied to one event or class (本課程, 學員, TA, 講師示範, 休息 10 分鐘, 分組作業, 今天 3 小時), on slides or in the script file. Use neutral words (接下來, 重點整理, 專案), and put environment-specific steps in the script file with the alternative (for example "on your own laptop, skip the ssh line").
@@ -129,10 +145,21 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 ### Checks before publishing
 - Code and text never run past the slide, a box edge or into the note column; long terminal lines shrink to fit.
 - Check every slide at every click step with the real fonts loaded (headless browser: scrollWidth vs clientWidth, element bounds vs the slide), including the final state after typing animations finish, and confirm nothing overlaps the title or footer. Look at screenshots of changed slides.
+- Check every SVG diagram at every click step with a geometry script (reference: scripts/check-diagrams.py in seanyeh77/cluster-slurm-slides), in SVG user units: a line running inside a box instead of ending at its edge, a line crossing a label, overlapping labels, a label sticking out of its box, and anything outside the viewBox. The slide-level overflow check does not look inside SVGs.
+- Review every diagram step from a full-resolution screenshot of the diagram alone, never from a scaled-down contact sheet: offsets of a few pixels (an axis cutting through boxes) disappear when shrunk.
 - Commands shown on slides must actually run; verify them when possible and keep example output faithful to current versions.
 - In Vue template attribute props, write `&amp;lt;` to show a literal `<` (for example `<untagged>`).
 - After scripted edits, review the diff to confirm only the intended slide changed.
 - Test every interactive feature in a real browser, including that slide navigation (arrow keys, space) still works after using it.
+- When asked for a review, run several cheap reviewers in parallel, each in one role: a learner without background, a design-system reviewer, an accessibility reviewer (WCAG 2.2 AA), a presenter on a projector, and an interaction tester. Verify every finding against screenshots and source before reporting, then list the confirmed ones by severity and the rejected ones with the reason.
+
+### UI variant (ui-design-system look)
+When SeanYeh asks for a deck in the ui-design-system look (for example to compare with the teaching style), keep the content and animations and change only the look:
+- The design system's default light tokens instead of the teaching preset: warm-gray neutrals, cards with soft shadows instead of borders, radii 6 to 14 px, headings weight 700. Remove every leftover teaching style: thick dark or colored left bars, sharp bordered chips, hard-coded teal or orange, mono font on non-code headings.
+- Cards only for blocks that hold several items (tables, quiz options, tiles, terminals). A single sentence is never wrapped in a centered white card with a shadow: that reads as generic AI-generated design.
+- The viewer chooses the accent: a color dot in the Slidev nav bar opens a popover with the design system's 8 preset swatches, a hex field (accepts the code with or without #, explains a wrong format), and the page-transition choice when the deck has one. The choice is stored under the design system's `ui-accent` key; hover, pressed, soft and focus colors follow the design system's derivation rules, and accent-colored text is darkened until it reaches 4.5:1 on the background.
+- The popover works by keyboard (Tab to the dot, Enter opens, arrow keys move within each radio group, Esc closes and returns focus) without breaking arrow-key navigation, and stays inside the window at 390 px wide.
+- Tables follow the design system: gray bold header row, grid lines, zebra rows, code names (errno, signals) in code style.
 
 ---
 
@@ -160,4 +187,5 @@ Applies whether the diagram is drawn in Miro, generated with Python (matplotlib,
 ### Layout
 - Compact and symmetric. Minimize whitespace without losing content, leaving enough room for lines to route smoothly. Goal: diagrams that look bigger, cleaner and punchier.
 - Export at a resolution that stays sharp on a 1920 x 1080 slide (SVG preferred; PNG at 2x).
+- When drawing with code, derive every coordinate that must line up (an axis under a row of boxes, an arrow ending on a box edge, a label beside a line) from the same named constants as the shapes it touches, never from a second hand-typed number.
 - Edges are never clipped: leave a margin around the canvas at least as wide as the thickest border (pad the SVG viewBox), so strokes on all four sides stay fully visible. Check by screenshotting the diagram alone at 2x.
