@@ -8,6 +8,8 @@ Walks every slide and every click step with the arrow key and reports:
   dim          visible text with opacity below 0.95
   small        visible text under 22 px (footer and chapter label excepted)
   table        table header smaller than its body, colored or thick-ruled table header
+  size         title, code block or terminal text off the size spec (54, 31, 29 px)
+  diagram      diagram or picture smaller than 70 % of the content width and height
   statement    statement sentence wrapped in a card, shadow, box or colored bar
   quiz-icon    icon or check mark on a quiz option
   symbol       special symbols (circled numbers, full-width brackets or slash, arrows, check marks)
@@ -100,6 +102,25 @@ CHECK_JS = r"""
     const c = getComputedStyle(b);
     if (c.boxShadow !== 'none' || parseFloat(c.borderLeftWidth) > 0 || (c.backgroundColor !== 'rgba(0, 0, 0, 0)' && b.classList.contains('st-body')))
       out.push(['statement', 'card, shadow or bar around the sentence', short(b)]);
+  }
+  // sizes from the spec (px on the 1920 canvas): title 54, code 31, terminal 29
+  const lay = page.querySelector('.slidev-layout');
+  const content = lay && !/tb-(cover|section|statement|end|bento|obj)\b/.test(lay.className);
+  const spec = [[content ? '.slidev-layout > h1, .tb-head > h1, .tb-title > h1' : null, 54, 'title'], ['.slidev-code', 31, 'code'], ['.term-body', 29, 'terminal']];
+  for (const [sel, want, name] of spec) {
+    if (!sel) continue;
+    const el = [...page.querySelectorAll(sel)].find(e => e.getBoundingClientRect().width && visible(e));
+    if (!el) continue;
+    const got = parseFloat(getComputedStyle(el).fontSize) / sc;
+    if (Math.abs(got - want) > 2.5 && !(name !== 'title' && got < want && el.dataset.fit)) out.push(['size', name + ' ' + Math.round(got) + ' px, spec ' + want + ' px', short(el)]);
+  }
+  // diagrams fill the content area: at least 70 % of its width (1760 px) or of its height (720 px)
+  for (const d of page.querySelectorAll('svg, img')) {
+    if (d.closest('.acp-wrap, .slidev-nav, button') || (d.parentElement && d.parentElement.closest('svg'))) continue;
+    const r = d.getBoundingClientRect();
+    const w = r.width / sc, h = r.height / sc;
+    if (w < 300 || !visible(d)) continue;
+    if (w < 1760 * 0.7 && h < 720 * 0.7) out.push(['diagram', Math.round(w) + ' x ' + Math.round(h) + ' px, under 70 % of the content area', d.getAttribute('src') || 'svg']);
   }
   if (page.querySelector('.qz-opt svg, .qz-check')) out.push(['quiz-icon', '', '']);
   const txt = page.innerText || '';

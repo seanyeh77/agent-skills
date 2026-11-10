@@ -60,8 +60,10 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - Slidev, custom "Textbook" theme, light backgrounds only (dark styles such as terminal or blueprint were rejected).
 - Canvas 1920 x 1080, routerMode hash, transition none, drawings disabled, `titleTemplate: '%s'`.
 - Deploy with GitHub Pages via GitHub Actions (`slidev build --base /<repo>/`).
+- To publish a deck as a Claude artifact: build with `--base ./` and routerMode hash, delete `_redirects` and `404.html` from the build, publish every file of `dist/`, and check it once inside the viewer with a forced dark host theme.
 - A host page (for example the artifact viewer) may set a dark theme on `<html>`, which overrides tokens defined at `:root`. Pin the deck's tokens and the `--tb-*` mapping on `body, #app`, imported after the theme CSS, and check the deck once with a forced dark host theme.
 - Page transitions stay off unless asked for. When a deck uses them: chrome (progress bar, chapter label, footer) stays still, the screen never goes blank and the two pages are never both half transparent (the new page fades in over the opaque old one), text snapshots keep their natural size instead of being stretched, and `prefers-reduced-motion` turns every transition off.
+- Viewers choose the accent color in every deck: a color dot at the right end of the Slidev nav bar opens a popover with the design system's 8 preset swatches and a hex field (accepts the code with or without #, explains a wrong format), plus the page-transition choice when the deck has transitions. The default is teal #0f766e for the teaching theme and blue #2457d6 for the UI variant. The choice is stored under the design system's `ui-accent` key, and every derived color (hover, pressed, soft, focus, readable accent text) follows the design system's accent derivation, so a light accent never makes text unreadable. The popover works by keyboard (Tab to the dot, Enter opens, arrow keys move within each radio group, Esc closes and returns focus) without breaking arrow-key navigation, stays inside the window at 390 px wide, and is hidden in print and export.
 
 ### Palette and fonts (hybrid preset of the design system)
 - Decks use the "teaching" preset of seanyeh77/ui-design-system, chosen as the hybrid option: neutrals and fonts come from the design system, while the teal accent, sharp corners and thin borders stay from the slide style. Deck CSS reads the design-system token names (--bg, --surface, --surface-sub, --ink, --ink-muted, --line, --line-strong, --accent, --accent-soft, --radius-sm, --radius-md, --font-sans, --font-mono) and never hard-codes these values; the preset supplies them.
@@ -85,6 +87,7 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 ### Layout
 - One concept per slide: title plus one component. Per-click explanations in the right-side note column (330 px, teal left border, NOTE label).
 - No Slidev speaker notes (no `<!-- -->` comments in slides). Every deck comes with a separate Markdown file (for example `SCRIPT.md`) holding the notes and talk script, ordered by slide number and title: for each slide, the note-column points by click step, then the script. Edit the script there, not in the slides.
+- After inserting, deleting or moving slides, renumber every slide heading in the script file and fix every reference to a slide number in it ("第 N 張").
 - Keep notes short: only the key point of that step, usually "command or option: what it does". Leave a step's note empty when the point is obvious from the screen ("進入 Container", "刪除 Container"); an empty step hides the whole note column, label included. Longer explanations go in the script file.
 - Anything the audience must do ("add 3 items in the browser") appears on the slide itself, for example as the takeaway line, not only in the script file.
 - Layouts: cover; section divider; objectives or agenda (01/02/03); focus slide for a set of items; statement; definition (term left, meaning and example right); two-column compare table; quiz; figure with a one-line teal takeaway; reference table; Bento grid for section and final summaries; end slide naming the next topic or next steps.
@@ -100,6 +103,7 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
   - Code names (commands, options, errno, signals, file paths) in code style: mono, surface-sub background, 2 px smaller than the body.
   - Frame: teaching theme 1.5 px line-color outer border, square corners, no shadow; UI variant no outer border, radius-lg and the card shadow.
 - Never dim text with opacity to mean "not yet" or "not chosen"; use the muted ink color, so every visible text keeps at least 4.5:1 contrast.
+- Avoid patterns that read as generic AI-generated design, in every theme: a lone sentence in a centered white card with a shadow; badges, chips or labels announcing a conclusion (「兩者相同」, 「正解」, 「重點」); check marks or icons on answers; gradients, glows and emoji as decoration; decorative icons next to headings. Emphasis comes from layout, size and the one accent color.
 - Smallest on-slide labels (file tags, tile labels, keyword chips, NEXT label) are at least 22 px.
 - A rule or explanation that would otherwise be a paragraph becomes something the audience can see, tried in this order: a step-by-step diagram (the mechanism, with "Step x of y"); a real example or output shown first with the rule as a one-line takeaway; short sentences revealed one per click (focus layout, cause and effect as two steps); a condition-and-result table revealed row by row; before/after diff or magic move; a quiz whose explanation is the rule. Diagram colors stay the fixed diagram palette in every theme; only the one highlighted element per step follows the accent.
 - Only when none of these fits, use the statement layout: the heading is the complete conclusion in one line, with at most one short supporting sentence in muted text below it. The sentence sits directly on the page, left-aligned at the content edge and vertically centered: no card, shadow, box or colored bar around it. Definitions, exceptions and background go in the script file.
@@ -107,6 +111,8 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 
 ### Animation
 - Magic Move, line highlight, terminal typing, code-to-diagram sync, before/after diff, annotated commands; step-by-step diagrams carry "Step x of y" and a caption.
+- A step-by-step diagram of a mechanism ends with the contrast case when there is one: after the normal flow, a last step shows what goes wrong without the key action (for example the missing close that keeps a connection in CLOSE_WAIT), with the one changed element in the accent color. This is the natural place right before a quiz on that point.
+- Diagrams and figures fill the content area: at least 70 % of its width (1760 px) or of its height (about 720 px below the title), with box text still 24 px. Enlarge the drawing or tighten its spacing rather than leaving a small picture in a large empty slide.
 - Step-by-step SVG diagrams are never scaled below 1x (box text stays 24 px): when a diagram has many rows, tighten the row pitch (down to 56 px, boxes 44 px) instead of shrinking the whole picture.
 - Highlighted code lines form one continuous band across the block width, with no gaps between lines or per-token patches.
 - Terminal typing is fast: about 15 ms per character, long commands done within about 0.8 s.
@@ -150,7 +156,7 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - Discuss with the user before restructuring a section or making other large changes.
 
 ### Checks before publishing
-- Run the slide checker on the built deck and fix everything it reports before publishing; a deck is not finished while it exits with 1. It walks every slide and click and reports text past the slide or clipped, wrapped headings and labels, dimmed text, text under 22 px, table headers that are smaller, colored or thick-ruled, statement sentences inside a card or bar, quiz icons, special symbols and event-bound wording. It ships with this skill as `scripts/check_slides.py` (also at https://raw.githubusercontent.com/seanyeh77/agent-skills/main/plugins/teaching-materials-style/skills/teaching-materials-style/scripts/check_slides.py):
+- Run the slide checker on the built deck and fix everything it reports before publishing; a deck is not finished while it exits with 1. It walks every slide and click and reports text past the slide or clipped, wrapped headings and labels, dimmed text, text under 22 px, table headers that are smaller, colored or thick-ruled, statement sentences inside a card or bar, quiz icons, special symbols, event-bound wording, titles, code blocks and terminals off the size spec (54, 31, 29 px), and diagrams smaller than 70 % of the content area. It ships with this skill as `scripts/check_slides.py` (also at https://raw.githubusercontent.com/seanyeh77/agent-skills/main/plugins/teaching-materials-style/skills/teaching-materials-style/scripts/check_slides.py):
   `npx slidev build --base ./ && npx vite preview --outDir dist --port 4173 &` then `python3 check_slides.py http://localhost:4173/ --shots shots/` (needs Playwright for Python and a Chromium). The checker does not judge content or diagrams; the checks below still apply.
 - Code and text never run past the slide, a box edge or into the note column; long terminal lines shrink to fit.
 - Check every slide at every click step with the real fonts loaded (headless browser: scrollWidth vs clientWidth, element bounds vs the slide), including the final state after typing animations finish, and confirm nothing overlaps the title or footer. Look at screenshots of changed slides.
@@ -166,8 +172,7 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 When SeanYeh asks for a deck in the ui-design-system look (for example to compare with the teaching style), keep the content and animations and change only the look:
 - The design system's default light tokens instead of the teaching preset: warm-gray neutrals, cards with soft shadows instead of borders, radii 6 to 14 px, headings weight 700. Remove every leftover teaching style: thick dark or colored left bars, sharp bordered chips, hard-coded teal or orange, mono font on non-code headings.
 - Cards only for blocks that hold several items (tables, quiz options, tiles, terminals). A single sentence is never wrapped in a centered white card with a shadow: that reads as generic AI-generated design.
-- The viewer chooses the accent: a color dot in the Slidev nav bar opens a popover with the design system's 8 preset swatches, a hex field (accepts the code with or without #, explains a wrong format), and the page-transition choice when the deck has one. The choice is stored under the design system's `ui-accent` key; hover, pressed, soft and focus colors follow the design system's derivation rules, and accent-colored text is darkened until it reaches 4.5:1 on the background.
-- The popover works by keyboard (Tab to the dot, Enter opens, arrow keys move within each radio group, Esc closes and returns focus) without breaking arrow-key navigation, and stays inside the window at 390 px wide.
+- The accent picker works as described under Setup, with blue #2457d6 as the default.
 - Tables use the Tables rules under Layout, with the UI frame (radius-lg and card shadow, no outer border).
 
 ---
@@ -178,7 +183,7 @@ Applies whether the diagram is drawn in Miro, generated with Python (matplotlib,
 
 ### Boxes and colors
 - Sharp-cornered boxes, border #1a1a1a width 2, text #1a1a1a (24 px at a 1920 px wide canvas, scale proportionally elsewhere).
-- Outer container #aeacac, inner node container #e7e7e7, service boxes #adf0c7, bars and storage #6eea9e. In slides the accent teal #0f766e may highlight one element per step.
+- Outer container #aeacac, inner node container #e7e7e7, service boxes #adf0c7, bars and storage #6eea9e. In slides the deck's accent color (teal #0f766e by default) may highlight one element per step.
 - Nest containers to show what runs inside what.
 - Size boxes so text fits on one line without crowding.
 
