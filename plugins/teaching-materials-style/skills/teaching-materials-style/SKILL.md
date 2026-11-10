@@ -54,7 +54,7 @@ Throughout, "audience" means whoever reads or watches: students, reviewers, team
 
 ## 2. Slide decks (Slidev, Textbook theme)
 
-Applies to any deck: lectures and workshops, conference or club talks, project and competition reports, proposals. Reference implementation: github.com/seanyeh77/docker-workshop (slides/: layouts, components, styles); reuse its layouts and components for a new deck. docker-workshop predates the hybrid palette below: when reusing its styles, replace its hard-coded colors and fonts (--tb-* variables) with the design-system tokens listed under Palette and fonts.
+Applies to any deck: lectures and workshops, conference or club talks, project and competition reports, proposals. Reference implementation: github.com/seanyeh77/docker-workshop (slides/: layouts, components, styles); reuse its layouts and components for a new deck. docker-workshop predates the hybrid palette below: when reusing its styles, replace its hard-coded colors and fonts (--tb-* variables) with the design-system tokens listed under Palette and fonts. Its tables, labels, statement and quiz styles also predate the rules below: where its CSS and these rules disagree, the rules win.
 
 ### Setup
 - Slidev, custom "Textbook" theme, light backgrounds only (dark styles such as terminal or blueprint were rejected).
@@ -92,6 +92,13 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - Headings, quiz questions, table headers, row labels, focus-index items and tile labels never wrap: shorten the wording or widen the column (size label columns to their content).
 - Compare tables: name the first column's header (項目, 情況); when both sides have the same value, merge the two cells into one left-aligned cell spanning both columns. No 「同左」 and no badge or chip announcing it (such as 「兩者相同」): the merged cell says it.
 - Rows revealed per click keep their row label, cell background and grid lines visible from the start; only the values appear on click.
+- Tables (compare and reference) look the same in every deck:
+  - Header row: background neutral-100 #eeecea, ink text, weight 700, 30 px, one line. Never a colored or accent header cell, never a thick or dark rule under the header.
+  - Body: ink text at the slide size (compare 34 px, reference 32 px), line height 1.45, cell padding 22 px 32 px, text top-aligned and left-aligned; numbers right-aligned with the unit in the column header.
+  - First column: row labels in ink, weight 600, the same size as the body (never smaller or muted), column sized to its longest label so labels never wrap.
+  - Lines: 1 px line color between all rows and columns; zebra rows in surface-sub #f6f5f4.
+  - Code names (commands, options, errno, signals, file paths) in code style: mono, surface-sub background, 2 px smaller than the body.
+  - Frame: teaching theme 1.5 px line-color outer border, square corners, no shadow; UI variant no outer border, radius-lg and the card shadow.
 - Never dim text with opacity to mean "not yet" or "not chosen"; use the muted ink color, so every visible text keeps at least 4.5:1 contrast.
 - Smallest on-slide labels (file tags, tile labels, keyword chips, NEXT label) are at least 22 px.
 - A rule or explanation that would otherwise be a paragraph becomes something the audience can see, tried in this order: a step-by-step diagram (the mechanism, with "Step x of y"); a real example or output shown first with the rule as a one-line takeaway; short sentences revealed one per click (focus layout, cause and effect as two steps); a condition-and-result table revealed row by row; before/after diff or magic move; a quiz whose explanation is the rule. Diagram colors stay the fixed diagram palette in every theme; only the one highlighted element per step follows the accent.
@@ -143,6 +150,8 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - Discuss with the user before restructuring a section or making other large changes.
 
 ### Checks before publishing
+- Run the slide checker on the built deck and fix everything it reports before publishing; a deck is not finished while it exits with 1. It walks every slide and click and reports text past the slide or clipped, wrapped headings and labels, dimmed text, text under 22 px, table headers that are smaller, colored or thick-ruled, statement sentences inside a card or bar, quiz icons, special symbols and event-bound wording. It ships with this skill as `scripts/check_slides.py` (also at https://raw.githubusercontent.com/seanyeh77/agent-skills/main/plugins/teaching-materials-style/skills/teaching-materials-style/scripts/check_slides.py):
+  `npx slidev build --base ./ && npx vite preview --outDir dist --port 4173 &` then `python3 check_slides.py http://localhost:4173/ --shots shots/` (needs Playwright for Python and a Chromium). The checker does not judge content or diagrams; the checks below still apply.
 - Code and text never run past the slide, a box edge or into the note column; long terminal lines shrink to fit.
 - Check every slide at every click step with the real fonts loaded (headless browser: scrollWidth vs clientWidth, element bounds vs the slide), including the final state after typing animations finish, and confirm nothing overlaps the title or footer. Look at screenshots of changed slides.
 - Check every SVG diagram at every click step with a geometry script (reference: scripts/check-diagrams.py in seanyeh77/cluster-slurm-slides), in SVG user units: a line running inside a box instead of ending at its edge, a line crossing a label, overlapping labels, a label sticking out of its box, and anything outside the viewBox. The slide-level overflow check does not look inside SVGs.
@@ -159,7 +168,7 @@ When SeanYeh asks for a deck in the ui-design-system look (for example to compar
 - Cards only for blocks that hold several items (tables, quiz options, tiles, terminals). A single sentence is never wrapped in a centered white card with a shadow: that reads as generic AI-generated design.
 - The viewer chooses the accent: a color dot in the Slidev nav bar opens a popover with the design system's 8 preset swatches, a hex field (accepts the code with or without #, explains a wrong format), and the page-transition choice when the deck has one. The choice is stored under the design system's `ui-accent` key; hover, pressed, soft and focus colors follow the design system's derivation rules, and accent-colored text is darkened until it reaches 4.5:1 on the background.
 - The popover works by keyboard (Tab to the dot, Enter opens, arrow keys move within each radio group, Esc closes and returns focus) without breaking arrow-key navigation, and stays inside the window at 390 px wide.
-- Tables follow the design system: gray bold header row, grid lines, zebra rows, code names (errno, signals) in code style.
+- Tables use the Tables rules under Layout, with the UI frame (radius-lg and card shadow, no outer border).
 
 ---
 
