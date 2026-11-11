@@ -66,31 +66,32 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - Viewers choose the accent color in every deck: a color dot at the right end of the Slidev nav bar opens a popover with the design system's 8 preset swatches and a hex field (accepts the code with or without #, explains a wrong format), plus the page-transition choice when the deck has transitions. The default is teal #0f766e for the teaching theme and blue #2457d6 for the UI variant. The choice is stored under the design system's `ui-accent` key, and every derived color (hover, pressed, soft, focus, readable accent text) follows the design system's accent derivation, so a light accent never makes text unreadable. The popover works by keyboard (Tab to the dot, Enter opens, arrow keys move within each radio group, Esc closes and returns focus) without breaking arrow-key navigation, stays inside the window at 390 px wide, and is hidden in print and export.
 
 ### Palette and fonts (hybrid preset of the design system)
-- Decks use the "teaching" preset of seanyeh77/ui-design-system, chosen as the hybrid option: neutrals and fonts come from the design system, while the teal accent, sharp corners and thin borders stay from the slide style. Deck CSS reads the design-system token names (--bg, --surface, --surface-sub, --ink, --ink-muted, --line, --line-strong, --accent, --accent-soft, --radius-sm, --radius-md, --font-sans, --font-mono) and never hard-codes these values; the preset supplies them.
-- Values: bg #fcfbfb, surface #ffffff, code and terminal-bar background (surface-sub) #f6f5f4, ink #171512, muted (ink-muted) #6d645a, rules (line) #e2dfdc, heavy rules and dividers #171512, accent teal #0f766e (chapter labels, progress bar, list markers, note border, correct answers), accent-soft #e3f2ef (highlighted code lines, soft fills), inactive focus-index items #aca49a.
+- Decks use the "teaching" preset of seanyeh77/ui-design-system, chosen as the hybrid option: neutrals and fonts come from the design system, while the accent (teal by default), sharp corners and thin borders stay from the slide style. Deck CSS reads the design-system token names (--bg, --surface, --surface-sub, --ink, --ink-muted, --line, --line-strong, --accent, --accent-soft, --radius-sm, --radius-md, --font-sans, --font-mono) and never hard-codes these values; the preset supplies them.
+- Values: bg #fcfbfb, surface #ffffff, code and terminal-bar background (surface-sub) #f6f5f4, ink #171512, muted (ink-muted) #6d645a, rules (line) #e2dfdc, heavy rules and dividers #171512, accent #0f766e teal by default (chapter labels, progress bar, list markers, note border, correct answers), accent-soft #e3f2ef by default (highlighted code lines, soft fills), inactive focus-index items in ink-muted.
+- The theme color is adjustable: teal is only the default, and each viewer can change it with the accent picker (see Setup). Every accent use reads `--accent`, `--accent-soft` or `--accent-text`, never a hard-coded teal or other color, so one choice recolors the whole deck: progress bar, chapter label, section numbers, note border, list markers, highlighted code, quiz answer, takeaway lines and the one highlighted diagram element. Neutrals, fonts and the diagram palette stay fixed.
 - Radius 0 everywhere (radius-sm and radius-md are 0 px in this preset); no shadows; frames keep 1.5 px borders in the line color.
 - Fonts: titles Inter + Noto Sans TC, weight 700. Body Inter + Noto Sans TC. Code, terminal and mono labels Geist Mono + Noto Sans TC.
 - Diagram fills keep the diagram palette (#aeacac, #e7e7e7, #adf0c7, #6eea9e) and do not follow the theme.
 - Sizes (px): title 54, body and lists 40, definitions 40, quiz options 35, cards 33, compare tables 34, step text 30, right-side note 30, code blocks 31, terminal 29, footer 18, chapter label 19.
 
 ### Fixed elements on every slide
-- 7 px teal progress bar at the top.
-- Uppercase teal section label top-left, with a gap below it.
+- 7 px progress bar in the accent color at the top.
+- Uppercase section label in the accent color top-left, with a gap below it.
 - Footer rule: deck title on the left, page / total on the right.
 - Optional small tag top-right naming the file or language (Dockerfile, Terminal).
 
 ### Titles and wording
-- Titles never centered. Default top-left, content centered in the remaining space; on some slides the title sits right above the content. Section dividers centered horizontally: large teal section number, subsections on the right.
+- Titles never centered. Default top-left, content centered in the remaining space; on some slides the title sits right above the content. Section dividers centered horizontally: large section number in the accent color, subsections on the right.
 - Titles concise and formal, never colloquial, never questions. Jokes and analogies go in the body, dialogue boxes or the script file.
 - All on-slide text (item titles, body, note column, takeaways, tables) uses formal written wording, not vivid colloquial phrases ("版本衝突", not "版本會打架").
 
 ### Layout
-- One concept per slide: title plus one component. Per-click explanations in the right-side note column (330 px, teal left border, NOTE label).
+- One concept per slide: title plus one component. Per-click explanations in the right-side note column (330 px, left border in the accent color, NOTE label).
 - No Slidev speaker notes (no `<!-- -->` comments in slides). Every deck comes with a separate Markdown file (for example `SCRIPT.md`) holding the notes and talk script, ordered by slide number and title: for each slide, the note-column points by click step, then the script. Edit the script there, not in the slides.
 - After inserting, deleting or moving slides, renumber every slide heading in the script file and fix every reference to a slide number in it ("第 N 張").
 - Keep notes short: only the key point of that step, usually "command or option: what it does". Leave a step's note empty when the point is obvious from the screen ("進入 Container", "刪除 Container"); an empty step hides the whole note column, label included. Longer explanations go in the script file.
 - Anything the audience must do ("add 3 items in the browser") appears on the slide itself, for example as the takeaway line, not only in the script file.
-- Layouts: cover; section divider; objectives or agenda (01/02/03); focus slide for a set of items; statement; definition (term left, meaning and example right); two-column compare table; quiz; figure with a one-line teal takeaway; reference table; Bento grid for section and final summaries; end slide naming the next topic or next steps.
+- Layouts: cover; section divider; objectives or agenda (01/02/03); focus slide for a set of items; statement; definition (term left, meaning and example right); two-column compare table; quiz; figure with a one-line takeaway in the accent color; reference table; Bento grid for section and final summaries; end slide naming the next topic or next steps.
 - Never lay several cards, pain points or steps side by side in a horizontal row. Use the focus method: a vertical index on the left with the current item highlighted, one item shown large on the right, advancing on click.
 - Headings, quiz questions, table headers, row labels, focus-index items and tile labels never wrap: shorten the wording or widen the column (size label columns to their content).
 - Compare tables: name the first column's header (項目, 情況); when both sides have the same value, merge the two cells into one left-aligned cell spanning both columns. No 「同左」 and no badge or chip announcing it (such as 「兩者相同」): the merged cell says it.
