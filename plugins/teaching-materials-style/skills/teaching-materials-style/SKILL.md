@@ -1,15 +1,16 @@
 ---
 name: teaching-materials-style
-description: SeanYeh's house style for any slide deck, document, note or diagram (talks, reports, proposals, technical docs, teaching). Use for Slidev decks, Notion or other docs, and diagrams in any tool.
+description: SeanYeh's house style for any slide deck, document, note, diagram or animation (talks, reports, proposals, technical docs, teaching). Use for Slidev decks, Notion or other docs, diagrams in any tool, and Motion Canvas animations (web page, Slidev embed or MP4).
 ---
 
 # Presentation and document style
 
-One style guide for every deck, document and diagram SeanYeh makes, whatever the purpose: teaching, talks, project reports, proposals, competition write-ups, technical notes. Read the section that matches the output; diagrams inside docs or slides also follow the Diagrams section.
+One style guide for every deck, document, diagram and animation SeanYeh makes, whatever the purpose: teaching, talks, project reports, proposals, competition write-ups, technical notes. Read the section that matches the output; diagrams inside docs or slides also follow the Diagrams section.
 
 - Documents and notes (Notion or similar) → section 1
 - Slide decks → section 2
 - Diagrams, in any tool → section 3
+- Animations of a moving mechanism (Motion Canvas: web page, Slidev embed or MP4 video) → section 4
 
 Throughout, "audience" means whoever reads or watches: students, reviewers, teammates, judges.
 
@@ -112,6 +113,7 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - Boxes and code frames sharp-cornered with 1.5 to 2 px borders.
 
 ### Animation
+- When the point is something moving (a job travelling between machines, a schedule filling up over time), build a Motion Canvas animation (section 4) and embed it, instead of a step-by-step SVG.
 - Magic Move, line highlight, terminal typing, code-to-diagram sync, before/after diff, annotated commands; step-by-step diagrams carry "Step x of y" and a caption.
 - A step-by-step diagram of a mechanism ends with the contrast case when there is one: after the normal flow, a last step shows what goes wrong without the key action (for example the missing close that keeps a connection in CLOSE_WAIT), with the one changed element in the accent color. This is the natural place right before a quiz on that point.
 - Diagrams and figures fill the content area: at least 70 % of its width (1760 px) or of its height (about 720 px below the title), with box text still 24 px. Enlarge the drawing or tighten its spacing rather than leaving a small picture in a large empty slide.
@@ -205,3 +207,65 @@ Applies whether the diagram is drawn in Miro, generated with Python (matplotlib,
 - Export at a resolution that stays sharp on a 1920 x 1080 slide (SVG preferred; PNG at 2x).
 - When drawing with code, derive every coordinate that must line up (an axis under a row of boxes, an arrow ending on a box edge, a label beside a line) from the same named constants as the shapes it touches, never from a second hand-typed number.
 - Edges are never clipped: leave a margin around the canvas at least as wide as the thickest border (pad the SVG viewBox), so strokes on all four sides stay fully visible. Check by screenshotting the diagram alone at 2x.
+
+---
+
+## 4. Motion Canvas animations
+
+For mechanisms where something moves and the motion is the point: a job travelling from login node to scheduler to compute nodes, a packet crossing hops, a schedule filling up over time. A diagram whose steps only add or highlight boxes stays a step-by-step SVG in the deck (section 2).
+
+The same animation becomes three outputs: a standalone web page (published as an artifact), an embed in a Slidev deck that advances with the deck's clicks, and an MP4 video.
+
+### Template and scripts
+Shipped with this skill (also at https://github.com/seanyeh77/agent-skills/tree/main/plugins/teaching-materials-style/skills/teaching-materials-style):
+- `templates/motion-canvas/`: Vite project with Motion Canvas 3.17.2 (versions pinned, package-lock included). Start every new animation by copying it, keep `theme.ts` and `components/`, and write new scenes in `src/scenes/` (add them to `src/project.ts`). Its README covers the files, URL parameters and pitfalls. The three Slurm scenes are examples: `jobFlow` (basic), `clusterFlow` (full flow, tokens travelling along paths), `backfill` (signal-driven layout, reactive text).
+- `templates/slidev/MotionCanvas.vue`: the deck component.
+- `scripts/check_motion.py`: plays every step and audits it.
+- `scripts/render_motion.py`: renders the MP4.
+
+Commands: `npm install`, `npm start` (editor at localhost:9000 for building scenes), `npm run build` (player page in `dist/`), `npm run preview` (serves `dist/` at localhost:4174).
+
+### Look
+- The Diagrams rules (section 3) apply: the diagram palette, sharp corners, 2 px #1a1a1a borders, #333333 elbowed lines, English only on the drawing, no line behind text, compact and symmetric layout.
+- Canvas 1920 x 1080, white background, 60 fps. Text in Inter, at least 24 px on the canvas.
+- Motion colors: moving tokens #94f2b8 with the usual border, the trail behind a moving token #1f9d57 at 6 px, secondary text #66707c.
+- Every color, font size and machine dimension lives in `src/theme.ts`; scenes never hard-code a color or a size. Positions that must line up are computed from the same constants as the shapes they touch.
+- A "Step x of y  Name" label in the bottom-right corner, updated each step.
+- An explanatory caption line under the diagram may be Chinese, because the standalone page and the video have nowhere else to put it. In embed mode (`?embed=1`) captions are not drawn (`SHOW_CAPTIONS` in `theme.ts`); the deck's note column carries the explanation.
+
+### Motion
+- The opening, before the first step, draws the whole diagram (nodes fade in one after another, lines draw), so the first frame is never empty.
+- Steps: use `step('name')` from `components/motion.tsx`, never `beginSlide()` directly. The player pauses there for a click; a video holds 1.5 s instead (`step(name, hold)` for a longer pause). One idea per step.
+- One `all()` per step, with `delay()` staggering the start of each action, never a chain of separate `yield*` lines that stop between actions.
+- Movement is driven by one progress signal from 0 to 1 (easeInOutCubic), with the position computed on the path (`travel()`), so a token never stops at a corner; the trail's end is bound to the same signal and fades on arrival.
+- An arrival ends with a flash on the target: bright for 0.17 s, back to its color in 0.23 s (`flash()`).
+- Tokens pop in and vanish with `popIn()` and `vanish()` (0.17 s each), and removed nodes are deleted from the scene.
+- Durations stay short: a travel 0.6 to 1.8 s depending on distance, fades 0.2 to 0.3 s.
+
+### Code pitfalls
+- The player imports `./project?project`, never `./project`; without the suffix the project is not bootstrapped and playback stops on the first error.
+- In a custom component write `{...rest}` before `ref`, otherwise the undefined `ref` inside rest overwrites the real one.
+- Wrap each item of a `map()` in `<Node>`, not a fragment `<>`; fragments inside arrays can silently drop out of the scene.
+- A local variable must not shadow an imported helper (a Txt named `step` hides `step()`).
+- `npx tsc --noEmit -p .` must pass before building.
+
+### Standalone page
+- `npm run build`, then publish every file of `dist/` as the artifact, with `index.html` as the page. `?scene=name` plays one scene.
+- Controls: Next, Previous, Replay (replays the segment that led to the current state), arrow keys, space, R, F for full screen; a step counter in the footer.
+
+### In a Slidev deck
+- Copy the built `dist/` to the deck's `public/motion/` (again after every rebuild) and `MotionCanvas.vue` to `components/`.
+- `<MotionCanvas src="motion/index.html" scene="clusterFlow" :steps="7" />`, where steps is the number of `step()` calls in the scene (check_motion.py prints it). The component takes that many clicks, counted like v-click, so other v-click elements and the note column keep their order; give `at` an absolute click number to share clicks with the note column.
+- Clicking forward plays the next segment; going back, or entering the slide from the following one, shows the state at once without replaying. Keys and clicks stay with Slidev (the iframe ignores pointer events).
+- The slide keeps one concept: title, the animation filling the content area, and per-step notes in the note column.
+- The slide checker cannot see inside the canvas: run check_motion.py with `?embed=1` as well.
+- Works in a deck built with `--base ./` and published as an artifact (the src is resolved against the deck's base).
+
+### MP4 video
+- `npm run build && npm run preview`, then `python3 render_motion.py http://localhost:4174/render.html out.mp4 --scene name`: 1920 x 1080, 60 fps, H.264 yuv420p (plays in PowerPoint, QuickTime and browsers), last frame held 2 s (`--tail`).
+- The renderer goes frame by frame in a headless browser, roughly twice the length of the video.
+
+### Checks before publishing
+- `python3 check_motion.py http://localhost:4174/ --scene name --shots shots/` for every scene, and once more with `?embed=1` when the animation goes in a deck. It must exit 0: it reports text outside the canvas, text overflowing its box, overlapping text, text under 24 px, steps that never settle, and console errors (an unreachable web font is only a warning).
+- Look at every step screenshot at full resolution, the opening and the final state included.
+- For a deck, press through the slide with the arrow keys forward and back and confirm the animation follows; for a video, look at one frame per second (`ffmpeg -i out.mp4 -vf "fps=1,scale=480:270,tile=4x4" -frames:v 1 tile.png`) and confirm each step holds long enough to read.

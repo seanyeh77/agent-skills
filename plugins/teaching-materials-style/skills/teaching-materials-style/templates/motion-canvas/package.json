@@ -1,0 +1,19 @@
+{
+  "name": "motion-canvas-animation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build --config vite.standalone.config.ts",
+    "preview": "vite preview --outDir dist --port 4174"
+  },
+  "devDependencies": {
+    "@motion-canvas/2d": "3.17.2",
+    "@motion-canvas/core": "3.17.2",
+    "@motion-canvas/ui": "3.17.2",
+    "@motion-canvas/vite-plugin": "3.17.2",
+    "typescript": "7.0.2",
+    "vite": "5.4.21"
+  }
+}
