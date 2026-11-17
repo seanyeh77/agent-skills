@@ -169,9 +169,24 @@ if (embedded) {
 }
 
 (async () => {
-  // 等字體載入，否則第一格可能會用到備用字體。
-  try {
+  // 等字體表單與 Inter 載入，否則第一格會用到備用字體。但最多等 2.5 秒：
+  // 手機網路慢或連不到 Google Fonts 時可能很久都不結束，畫面會一直是白的。
+  // 字體表單在 index.html 以 media="print" 非同步載入，所以要先等它的 load。
+  const fontsReady = (async () => {
+    const sheet = document.querySelector<HTMLLinkElement>(
+      'link[rel="stylesheet"][href*="fonts.googleapis.com"]',
+    );
+    // data-done 由 index.html 的 onload / onerror 設定：表單已載入或已失敗。
+    if (sheet && !sheet.dataset.done) {
+      await new Promise(resolve => {
+        sheet.addEventListener('load', resolve, {once: true});
+        sheet.addEventListener('error', resolve, {once: true});
+      });
+    }
     await document.fonts.load('32px Inter');
+  })();
+  try {
+    await Promise.race([fontsReady, new Promise(resolve => setTimeout(resolve, 2500))]);
   } catch {}
   await presenter.present({
     name: project.scenes[0].name,

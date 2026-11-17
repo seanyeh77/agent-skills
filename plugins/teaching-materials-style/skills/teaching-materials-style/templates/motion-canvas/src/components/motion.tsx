@@ -172,8 +172,8 @@ export function* draw(line: Line, duration = 0.5): ThreadGenerator {
  * 段落的分界：取代場景裡的 beginSlide()。
  *
  * 播放頁（Presenter）會在這裡停下來等按鍵，跟 beginSlide() 一樣。
- * 匯出影片時 beginSlide() 不會停，上一段一播完就接下一段，觀眾來不及看，
- * 所以影片模式先停 hold 秒再往下。編輯器裡預覽時也照影片的節奏停。
+ * 在編輯器裡預覽時 beginSlide() 不會停，上一段一播完就接下一段，
+ * 所以不是在播放頁上時先停 hold 秒再往下。
  */
 export function* step(name: string, hold = 1.5): ThreadGenerator {
   if (usePlayback().state !== PlaybackState.Presenting) {

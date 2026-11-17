@@ -23,9 +23,9 @@ function useOwnIndexHtml(): Plugin {
         outDir: 'dist',
         emptyOutDir: true,
         assetsDir: 'assets',
-        // index.html 是播放頁，render.html 是匯出影片用的頁面
+        // index.html 是播放頁
         rollupOptions: {
-          input: {index: 'index.html', render: 'render.html'},
+          input: {index: 'index.html'},
           preserveEntrySignatures: false,
         },
       },
