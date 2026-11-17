@@ -8,20 +8,21 @@
 // can follow the new color.
 
 export const ACCENT_KEY = 'ui-accent'
-/** The deck's default: 青 #0f8a85 for the teaching theme, 藍 #2457d6 for the UI variant.
+/** The deck's default: 青 #0e827d for the teaching theme, 藍 #2457d6 for the UI variant.
  *  It must be one of PRESETS, so a viewer can always pick it again. */
-export const DEFAULT_ACCENT = '#0f8a85'
+export const DEFAULT_ACCENT = '#0e827d'
 
-// The design system's 8 recommended swatches (AccentPicker).
+// The design system's 8 recommended swatches (AccentPicker). Each reaches 4.5:1 in the
+// light theme both as text on bg and with white text on it.
 export const PRESETS: [string, string][] = [
   ['藍', '#2457d6'],
   ['靛', '#5b4fd6'],
   ['紫', '#8a4fd6'],
   ['桃紅', '#c2407a'],
   ['紅', '#cd3a2f'],
-  ['橘', '#c4600f'],
-  ['綠', '#1b8a4d'],
-  ['青', '#0f8a85'],
+  ['橘', '#b85a0e'],
+  ['綠', '#1a844a'],
+  ['青', '#0e827d'],
 ]
 
 const hexRgb = (x: string) => [1, 3, 5].map((i) => parseInt(x.slice(i, i + 2), 16))
