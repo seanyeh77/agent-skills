@@ -15,7 +15,7 @@
 -->
 <script setup lang="ts">
 import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue';
-import {useSlideContext} from '@slidev/client';
+import {useIsSlideActive, useSlideContext} from '@slidev/client';
 
 const props = withDefaults(
   defineProps<{
@@ -82,13 +82,56 @@ onBeforeUnmount(() => window.removeEventListener('message', onMessage));
 watch(stage, () => ready.value && send());
 
 // Thumbnails (overview, next-slide preview) do not need a running animation.
-const live = computed(() => ['slide', 'presenter', 'print'].includes($renderContext.value));
+// In the deck itself the iframe is created only while its slide is the current one:
+// Slidev preloads the neighbouring slides hidden (0 x 0 px), and Motion Canvas would
+// measure every box and text there as size 0 and keep those sizes.
+const isActive = useIsSlideActive();
+const live = computed(
+  () =>
+    ['slide', 'presenter', 'print'].includes($renderContext.value) &&
+    ($renderContext.value === 'print' || isActive.value),
+);
+watch(live, on => {
+  if (!on) ready.value = false;
+});
+
+// If the animation has not reported back a few seconds after the iframe appears
+// (slow network, a request that stalled), load it once more instead of leaving a
+// blank frame.
+const attempt = ref(0);
+let retry: ReturnType<typeof setTimeout> | undefined;
+watch(
+  [live, attempt],
+  ([on]) => {
+    clearTimeout(retry);
+    if (on)
+      retry = setTimeout(() => {
+        if (!ready.value && attempt.value < 2) attempt.value++;
+      }, 6000);
+  },
+  {immediate: true},
+);
+watch(ready, r => r && clearTimeout(retry));
+onBeforeUnmount(() => clearTimeout(retry));
+
+// The animation reads the viewer's accent (ui-accent) when it loads. When the viewer picks
+// another color in the deck (accent.ts fires 'ui-accent-change'), reload it so the
+// highlighted element follows; it returns to the current step on its own.
+const recolor = ref(0);
+const onAccent = () => {
+  if (!live.value) return;
+  ready.value = false;
+  recolor.value++;
+};
+onMounted(() => window.addEventListener('ui-accent-change', onAccent));
+onBeforeUnmount(() => window.removeEventListener('ui-accent-change', onAccent));
 </script>
 
 <template>
   <div class="motion-canvas">
     <iframe
       v-if="live"
+      :key="`${attempt}-${recolor}`"
       ref="frame"
       :src="url"
       tabindex="-1"

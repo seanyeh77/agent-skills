@@ -6,9 +6,13 @@
     <title>Slurm Job Flow</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- 字體表單不阻擋播放程式：連不到或很慢時，先用備用字體開始播放。 -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+TC:wght@400;500&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all';this.dataset.done='1'"
+      onerror="this.dataset.done='1'"
     />
     <style>
       :root {

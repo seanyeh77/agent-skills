@@ -1,6 +1,6 @@
 ---
 name: teaching-materials-style
-description: SeanYeh's house style for any slide deck, document, note, diagram or animation (talks, reports, proposals, technical docs, teaching). Use for Slidev decks, Notion or other docs, diagrams in any tool, and Motion Canvas animations (web page, Slidev embed or MP4).
+description: SeanYeh's house style for any slide deck, document, note, diagram or animation (talks, reports, proposals, technical docs, teaching). Use for Slidev decks, Notion or other docs, diagrams in any tool, and Motion Canvas animations (web page or Slidev embed).
 ---
 
 # Presentation and document style
@@ -10,7 +10,7 @@ One style guide for every deck, document, diagram and animation SeanYeh makes, w
 - Documents and notes (Notion or similar) → section 1
 - Slide decks → section 2
 - Diagrams, in any tool → section 3
-- Animations of a moving mechanism (Motion Canvas: web page, Slidev embed or MP4 video) → section 4
+- Animations of a moving mechanism (Motion Canvas: web page or Slidev embed) → section 4
 
 Throughout, "audience" means whoever reads or watches: students, reviewers, teammates, judges.
 
@@ -65,11 +65,12 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 - To publish a deck as a Claude artifact: build with `--base ./` and routerMode hash, delete `_redirects` and `404.html` from the build, publish every file of `dist/`, and check it once inside the viewer with a forced dark host theme.
 - A host page (for example the artifact viewer) may set a dark theme on `<html>`, which overrides tokens defined at `:root`. Pin the deck's tokens and the `--tb-*` mapping on `body, #app`, imported after the theme CSS, and check the deck once with a forced dark host theme.
 - Page transitions stay off unless asked for. When a deck uses them: chrome (progress bar, chapter label, footer) stays still, the screen never goes blank and the two pages are never both half transparent (the new page fades in over the opaque old one), text snapshots keep their natural size instead of being stretched, and `prefers-reduced-motion` turns every transition off.
-- Viewers choose the accent color in every deck: a color dot at the right end of the Slidev nav bar opens a popover with the design system's 8 preset swatches and a hex field (accepts the code with or without #, explains a wrong format), plus the page-transition choice when the deck has transitions. The default is teal #0f766e for the teaching theme and blue #2457d6 for the UI variant. The choice is stored under the design system's `ui-accent` key, and every derived color (hover, pressed, soft, focus, readable accent text) follows the design system's accent derivation, so a light accent never makes text unreadable. The popover works by keyboard (Tab to the dot, Enter opens, arrow keys move within each radio group, Esc closes and returns focus) without breaking arrow-key navigation, stays inside the window at 390 px wide, and is hidden in print and export.
+- Viewers choose the accent color in every deck: a color dot at the right end of the Slidev nav bar opens a popover with the design system's 8 preset swatches and a hex field (accepts the code with or without #, explains a wrong format), plus the page-transition choice when the deck has transitions. The default is one of the 8 swatches, so a viewer can always pick it again: 青 #0e827d for the teaching theme and 藍 #2457d6 for the UI variant. Every swatch, and so every default, reaches 4.5:1 in the light theme both as text on the background and with white text on it. The choice is stored under the design system's `ui-accent` key, and every derived color (hover, pressed, soft, focus, readable accent text) follows the design system's accent derivation, so a light accent never makes text unreadable. The popover works by keyboard (Tab to the dot, Enter opens, arrow keys move within each radio group, Esc closes and returns focus) without breaking arrow-key navigation, stays inside the window at 390 px wide, and is hidden in print and export.
+- Build the picker from `templates/slidev/`: `custom-nav-controls.vue` goes in the deck root (Slidev renders it at the right end of the nav bar), `accent.ts` in `utils/`, and `setup/main.ts` calls `applyAccent(storedAccent(), true)` once so the stored or default color applies on load. Three details matter: the dot is a focusable `div role="button"`, not a `<button>`, because Slidev turns arrow-key navigation off while a button has focus; the derived colors are set inline on `html`, `body` and `#app`, because the deck pins its tokens on `body, #app`; and the popover follows the deck's theme (in the teaching theme square swatches, no shadow, 1.5 px borders). The choice is shared through `ui-accent` with every page on the same site, the design system's docs included.
 
 ### Palette and fonts (hybrid preset of the design system)
 - Decks use the "teaching" preset of seanyeh77/ui-design-system, chosen as the hybrid option: neutrals and fonts come from the design system, while the accent (teal by default), sharp corners and thin borders stay from the slide style. Deck CSS reads the design-system token names (--bg, --surface, --surface-sub, --ink, --ink-muted, --line, --line-strong, --accent, --accent-soft, --radius-sm, --radius-md, --font-sans, --font-mono) and never hard-codes these values; the preset supplies them.
-- Values: bg #fcfbfb, surface #ffffff, code and terminal-bar background (surface-sub) #f6f5f4, ink #171512, muted (ink-muted) #6d645a, rules (line) #e2dfdc, heavy rules and dividers #171512, accent #0f766e teal by default (chapter labels, progress bar, list markers, note border, correct answers), accent-soft #e3f2ef by default (highlighted code lines, soft fills), inactive focus-index items in the muted ink #6d645a (lighter grays such as #aca49a fall below 4.5:1).
+- Values: bg #fcfbfb, surface #ffffff, code and terminal-bar background (surface-sub) #f6f5f4, ink #171512, muted (ink-muted) #6d645a, rules (line) #e2dfdc, heavy rules and dividers #171512, accent 青 #0e827d by default (chapter labels, progress bar, list markers, note border, correct answers), accent-soft #e2f0ef by default (highlighted code lines, soft fills); accent-colored text reads `--accent-text` (the accent itself for every swatch, darkened only for a custom color below 4.5:1), inactive focus-index items in the muted ink #6d645a (lighter grays such as #aca49a fall below 4.5:1).
 - The theme color is adjustable: teal is only the default, and each viewer can change it with the accent picker (see Setup). Every accent use reads `--accent`, `--accent-soft` or `--accent-text`, never a hard-coded teal or other color, so one choice recolors the whole deck: progress bar, chapter label, section numbers, note border, list markers, highlighted code, quiz answer, takeaway lines and the one highlighted diagram element. Neutrals, fonts and the diagram palette stay fixed.
 - Radius 0 everywhere (radius-sm and radius-md are 0 px in this preset); no shadows; frames keep 1.5 px borders in the line color.
 - Fonts: titles Inter + Noto Sans TC, weight 700. Body Inter + Noto Sans TC. Code, terminal and mono labels Geist Mono + Noto Sans TC.
@@ -187,7 +188,7 @@ Applies whether the diagram is drawn in Miro, generated with Python (matplotlib,
 
 ### Boxes and colors
 - Sharp-cornered boxes, border #1a1a1a width 2, text #1a1a1a (24 px at a 1920 px wide canvas, scale proportionally elsewhere).
-- Outer container #aeacac, inner node container #e7e7e7, service boxes #adf0c7, bars and storage #6eea9e. In slides the deck's accent color (teal #0f766e by default) may highlight one element per step.
+- Outer container #aeacac, inner node container #e7e7e7, service boxes #adf0c7, bars and storage #6eea9e. In slides the deck's accent color (青 #0e827d by default) may highlight one element per step.
 - Nest containers to show what runs inside what.
 - Size boxes so text fits on one line without crowding.
 
@@ -214,28 +215,27 @@ Applies whether the diagram is drawn in Miro, generated with Python (matplotlib,
 
 For mechanisms where something moves and the motion is the point: a job travelling from login node to scheduler to compute nodes, a packet crossing hops, a schedule filling up over time. A diagram whose steps only add or highlight boxes stays a step-by-step SVG in the deck (section 2).
 
-The same animation becomes three outputs: a standalone web page (published as an artifact), an embed in a Slidev deck that advances with the deck's clicks, and an MP4 video.
+The same animation becomes two outputs: a standalone web page (published as an artifact) and an embed in a Slidev deck that advances with the deck's clicks.
 
 ### Template and scripts
 Shipped with this skill (also at https://github.com/seanyeh77/agent-skills/tree/main/plugins/teaching-materials-style/skills/teaching-materials-style):
 - `templates/motion-canvas/`: Vite project with Motion Canvas 3.17.2 (versions pinned, package-lock included). Start every new animation by copying it, keep `theme.ts` and `components/`, and write new scenes in `src/scenes/` (add them to `src/project.ts`). Its README covers the files, URL parameters and pitfalls. The three Slurm scenes are examples: `jobFlow` (basic), `clusterFlow` (full flow, tokens travelling along paths), `backfill` (signal-driven layout, reactive text).
 - `templates/slidev/MotionCanvas.vue`: the deck component.
 - `scripts/check_motion.py`: plays every step and audits it.
-- `scripts/render_motion.py`: renders the MP4.
 
 Commands: `npm install`, `npm start` (editor at localhost:9000 for building scenes), `npm run build` (player page in `dist/`), `npm run preview` (serves `dist/` at localhost:4174).
 
 ### Look
 - The Diagrams rules (section 3) apply: the diagram palette, sharp corners, 2 px #1a1a1a borders, #333333 elbowed lines, English only on the drawing, no line behind text, compact and symmetric layout.
 - Canvas 1920 x 1080, white background, 60 fps. Text in Inter, at least 24 px on the canvas.
-- Motion colors: moving tokens #94f2b8 with the usual border, the trail behind a moving token #1f9d57 at 6 px, secondary text #66707c.
+- Motion colors: moving tokens #94f2b8 with the usual border, the trail behind a moving token #1f9d57 at 6 px, secondary text #66707c. The one changed element of a contrast case uses `COLOR.accent` (text `COLOR.accentText`), which `theme.ts` reads from the viewer's `ui-accent` (青 #0e827d when none is stored); when the viewer picks another color in the deck, `MotionCanvas.vue` reloads the animation at the current step.
 - Every color, font size and machine dimension lives in `src/theme.ts`; scenes never hard-code a color or a size. Positions that must line up are computed from the same constants as the shapes they touch.
 - A "Step x of y  Name" label in the bottom-right corner, updated each step.
-- An explanatory caption line under the diagram may be Chinese, because the standalone page and the video have nowhere else to put it. In embed mode (`?embed=1`) captions are not drawn (`SHOW_CAPTIONS` in `theme.ts`); the deck's note column carries the explanation.
+- An explanatory caption line under the diagram may be Chinese, because the standalone page has nowhere else to put it. In embed mode (`?embed=1`) captions are not drawn (`SHOW_CAPTIONS` in `theme.ts`); the deck's note column carries the explanation.
 
 ### Motion
 - The opening, before the first step, draws the whole diagram (nodes fade in one after another, lines draw), so the first frame is never empty.
-- Steps: use `step('name')` from `components/motion.tsx`, never `beginSlide()` directly. The player pauses there for a click; a video holds 1.5 s instead (`step(name, hold)` for a longer pause). One idea per step.
+- Steps: use `step('name')` from `components/motion.tsx`, never `beginSlide()` directly. The player pauses there for a click; the editor preview holds 1.5 s instead (`step(name, hold)` for a longer pause). One idea per step.
 - One `all()` per step, with `delay()` staggering the start of each action, never a chain of separate `yield*` lines that stop between actions.
 - Movement is driven by one progress signal from 0 to 1 (easeInOutCubic), with the position computed on the path (`travel()`), so a token never stops at a corner; the trail's end is bound to the same signal and fades on arrival.
 - An arrival ends with a flash on the target: bright for 0.17 s, back to its color in 0.23 s (`flash()`).
@@ -257,15 +257,13 @@ Commands: `npm install`, `npm start` (editor at localhost:9000 for building scen
 - Copy the built `dist/` to the deck's `public/motion/` (again after every rebuild) and `MotionCanvas.vue` to `components/`.
 - `<MotionCanvas src="motion/index.html" scene="clusterFlow" :steps="7" />`, where steps is the number of `step()` calls in the scene (check_motion.py prints it). The component takes that many clicks, counted like v-click, so other v-click elements and the note column keep their order; give `at` an absolute click number to share clicks with the note column.
 - Clicking forward plays the next segment; going back, or entering the slide from the following one, shows the state at once without replaying. Keys and clicks stay with Slidev (the iframe ignores pointer events).
+- The component creates its iframe only while its slide is the current one: Slidev keeps the neighbouring slides mounted but hidden at 0 px, and Motion Canvas measures every box and text there as size 0 and keeps it (boxes vanish, labels shift). If the animation has not reported back after 6 s it reloads the iframe once.
+- The player page loads its Google Fonts stylesheet without blocking (`media="print"` swapped on load) and waits at most 2.5 s for Inter: a blocking stylesheet keeps the player script from running, so on a slow phone connection the frame stays white.
 - The slide keeps one concept: title, the animation filling the content area, and per-step notes in the note column.
 - The slide checker cannot see inside the canvas: run check_motion.py with `?embed=1` as well.
 - Works in a deck built with `--base ./` and published as an artifact (the src is resolved against the deck's base).
 
-### MP4 video
-- `npm run build && npm run preview`, then `python3 render_motion.py http://localhost:4174/render.html out.mp4 --scene name`: 1920 x 1080, 60 fps, H.264 yuv420p (plays in PowerPoint, QuickTime and browsers), last frame held 2 s (`--tail`).
-- The renderer goes frame by frame in a headless browser, roughly twice the length of the video.
-
 ### Checks before publishing
 - `python3 check_motion.py http://localhost:4174/ --scene name --shots shots/` for every scene, and once more with `?embed=1` when the animation goes in a deck. It must exit 0: it reports text outside the canvas, text overflowing its box, overlapping text, text under 24 px, steps that never settle, and console errors (an unreachable web font is only a warning).
 - Look at every step screenshot at full resolution, the opening and the final state included.
-- For a deck, press through the slide with the arrow keys forward and back and confirm the animation follows; for a video, look at one frame per second (`ffmpeg -i out.mp4 -vf "fps=1,scale=480:270,tile=4x4" -frames:v 1 tile.png`) and confirm each step holds long enough to read.
+- For a deck, press through the slide with the arrow keys forward and back, enter it from the previous and from the following slide, and confirm the animation follows.

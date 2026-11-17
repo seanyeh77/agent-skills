@@ -1,13 +1,12 @@
 # Motion Canvas 動畫模板
 
 做「會動的機制圖」用的模板：物件沿著線移動、服務閃一下、方塊長出來，按一下播一段。
-裡面有三個 Slurm 場景，是可以直接改來用的範例。同一份動畫可以產出三種東西：
+裡面有三個 Slurm 場景，是可以直接改來用的範例。同一份動畫可以產出兩種東西：
 
 | 產出 | 怎麼做 |
 |---|---|
 | 獨立網頁 | `npm run build`，`dist/` 整個資料夾發佈成 artifact 或放到任何靜態網站 |
 | 嵌進 Slidev | 把 `dist/` 複製到 deck 的 `public/motion/`，用 `../slidev/MotionCanvas.vue` 元件播放 |
-| MP4 影片 | `npm run build` 後用 `../../scripts/render_motion.py` 輸出 |
 
 | 場景 | 內容 | 難度 |
 |---|---|---|
@@ -26,16 +25,14 @@ npm run build    # 建置成一頁可以直接開的網頁，輸出在 dist/
 npm run preview  # 在 http://localhost:4174/ 開啟建置結果
 ```
 
-建置後先檢查，再發佈或輸出影片（需要 Python 的 Playwright 與 Chromium，影片另外需要 ffmpeg）：
+建置後先檢查再發佈（需要 Python 的 Playwright 與 Chromium）：
 
 ```bash
 python3 ../../scripts/check_motion.py http://localhost:4174/ --scene jobFlow --shots shots/
-python3 ../../scripts/render_motion.py http://localhost:4174/render.html jobFlow.mp4 --scene jobFlow
 ```
 
 `check_motion.py` 一段一段播到底，每段截一張圖，並檢查文字有沒有超出畫布、超出方塊、
 互相重疊或小於 24 px，以及 console 有沒有錯誤；有問題就以 1 結束。
-`render_motion.py` 輸出 1920 x 1080、60 fps 的 H.264 影片，結尾多停 2 秒。
 
 ## 網址參數
 
@@ -55,7 +52,7 @@ python3 ../../scripts/render_motion.py http://localhost:4174/render.html jobFlow
 
 | 檔案 | 內容 |
 |---|---|
-| `src/theme.ts` | 顏色、字級、機器尺寸與座標計算。要改外觀先改這裡 |
+| `src/theme.ts` | 顏色、字級、機器尺寸與座標計算。要改外觀先改這裡。`COLOR.accent` 讀觀眾在簡報選的強調色（`ui-accent`），沒選過是青 `#0e827d`；文字用 `COLOR.accentText` |
 | `src/components/parts.tsx` | 可重複使用的零件：文字、方塊、一台機器 |
 | `src/components/motion.tsx` | 動作語彙：沿路徑移動、trail、彈出、閃一下。見下面「怎麼讓動畫絲滑」 |
 | `src/scenes/clusterFlow.tsx` | 完整版流程圖：六個步驟，照投影片的座標寫 |
@@ -64,7 +61,6 @@ python3 ../../scripts/render_motion.py http://localhost:4174/render.html jobFlow
 | `src/components/schedule.tsx` | 排程圖的零件：時間軸、node 列、用訊號定位的 job 方塊 |
 | `src/project.ts` | 把場景組成一個專案，編輯器與建置都從這裡進入 |
 | `src/embed.ts` | 建置版的播放控制：鍵盤、按鈕、段落計數、嵌入模式 |
-| `src/render.ts`、`render.html` | 匯出影片用的頁面，給 `render_motion.py` 打開 |
 | `src/audit.ts` | 版面檢查，給 `check_motion.py` 呼叫 |
 | | 注意 `embed.ts` 匯入的是 `./project?project`：這個後綴會讓外掛用 `bootstrap()` 把專案補成完整的形狀。直接匯入 `./project` 會少掉 `logger` 等東西，動畫播到一半按下一步就會整個停住 |
 | `vite.config.ts` | 編輯器用的設定 |
@@ -77,7 +73,7 @@ python3 ../../scripts/render_motion.py http://localhost:4174/render.html jobFlow
 2. 動畫用 `yield*` 一步一步播。`all()` 讓多個動作同時進行，`chain()` 讓它們依序進行。
    `ref().opacity(1, 0.4)` 的意思是「把透明度在 0.4 秒內變成 1」。
 3. `step('name')`（`motion.tsx`，包著 `beginSlide`）會在播放時停下來等按鍵，
-   一個 `step` 就是一個段落，一段只放一件事。影片裡不會停，所以 `step()` 在影片模式
+   一個 `step` 就是一個段落，一段只放一件事。編輯器預覽時不會停，所以 `step()` 在編輯器裡
    先停 1.5 秒再往下。場景裡一律用 `step()`，不要直接寫 `beginSlide()`。
 
 ## backfill 場景用到的寫法
@@ -149,7 +145,7 @@ python3 ../../scripts/render_motion.py http://localhost:4174/render.html jobFlow
 | `travel(token, path, 秒, {layer})` | 沿折線走一趟，可帶 trail |
 | `popIn` / `vanish` | 彈出 / 收掉並移除節點 |
 | `flash(rect, 回到的顏色)` | 閃一下再回色 |
-| `step(name, hold)` | 段落分界；播放頁停下來等按鍵，影片停 hold 秒 |
+| `step(name, hold)` | 段落分界；播放頁停下來等按鍵，編輯器預覽停 hold 秒 |
 | `pointOnPath(points, t)` | 折線上走了 t 成的位置（按長度分配，速度才均勻） |
 
 卡片要畫在 trail 之上，所以場景裡放兩個空的 `<Node>`：先 `trailLayer`、後 `tokenLayer`。
