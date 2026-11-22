@@ -319,6 +319,26 @@ Effects, timing and when to use each
 - Keep effects short: fades 0.15 s, zooms 0.3 s, transitions 0.5 s. Only a motion path may take longer (about 1.5 s), because the movement is the point.
 - Zoom slides: when any mark on a screenshot needs a close-up, every mark gets its own zoom slide, in badge order, so the walkthrough never jumps from mark 1 to mark 3.
 
+Order of steps
+- Context first, then the moving parts: on a diagram, the outer container and fixed parts (the frame, the legend, the two lifelines of a sequence diagram) are visible from the start or come in step 1; boxes then appear in the order the data or the work flows.
+- Follow the reading and the causal order: source before destination, request before response, cause before effect, normal flow before the exception or optional path (an optional webhook, an error case) which comes last.
+- A box and the arrow that leads into it appear together; an arrow never appears before both its ends are visible.
+- Movement (a motion path) is the last step, after everything it moves along is on screen.
+- Numbered marks on a screenshot follow the order of use in the product (the order a user would click), or top-left to bottom-right when there is no such order; the badges, the caption list and the zoom slides use that same order.
+- Staggered items on one click (coverage circles) go in a fixed spatial order, for example left to right.
+
+How to build it
+- In PowerPoint by hand:
+  - Animations tab: add the entrance effect, then in the Animation Pane set Start (On Click for the first element of a step, With Previous for the rest of that step), Duration and Delay as in the table above. Check the pane lists the steps in the intended order and numbers them 1, 2, 3 without gaps.
+  - Morph: duplicate the overview slide, change only the picture's crop and size on the copy, and set Transitions > Morph (Effect Options: Objects) on the copy, duration 0.50. If PowerPoint does not match the picture across the two slides, give it the same name on both, prefixed with `!!` in the Selection Pane.
+  - Agenda: Insert > Zoom > Summary Zoom (or Section Zoom per tile) with sections defined first; tick Return to Zoom so each chapter returns to the agenda.
+- From a generator script (pptxgenjs cannot write animations, so a post-processing step adds them to the slide XML):
+  - Name each animated shape by its step: `anim-<step>-<n>` for a fade, `anim-<step>-<n>-zoom-<delay ms>` for a staggered zoom, `anim-<step>-<n>-path-<key>` for a fade plus motion path whose points are stored under `<key>`. The post-processor groups shapes by step, makes the first of each step On Click and the rest With Previous, and writes the durations above.
+  - Motion paths are computed from the same coordinates the arrows are drawn with, as fractions of the slide width and height relative to the shape's start, so the token follows the arrows exactly.
+  - Morph: the generator gives the picture the same object name on the overview and zoom slides and lists the zoom slides; the post-processor adds the Morph transition with a Fade fallback.
+  - Agenda: placeholders named `zoom-<k>` are replaced by Section Zoom objects pointing at section k, with a thumbnail of that chapter's first slide.
+  - Takeaway text is created with animation switched off in the helper, so it can never be animated by mistake.
+
 Never animated
 - Title, chapter label, progress bar and footer.
 - The takeaway line (accent text): it is visible from the start, because it is the slide's conclusion.
