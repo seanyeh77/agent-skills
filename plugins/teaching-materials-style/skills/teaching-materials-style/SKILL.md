@@ -1,6 +1,6 @@
 ---
 name: teaching-materials-style
-description: SeanYeh's house style for any slide deck, document, note, diagram or animation (talks, reports, proposals, technical docs, teaching). Use for Slidev decks, Notion or other docs, diagrams in any tool, and Motion Canvas animations (web page or Slidev embed).
+description: SeanYeh's house style for any slide deck, document, note, diagram or animation (talks, reports, proposals, technical docs, teaching). Use for Slidev decks, PowerPoint (.pptx) decks built from screenshots, Notion or other docs, diagrams in any tool, and Motion Canvas animations (web page or Slidev embed).
 ---
 
 # Presentation and document style
@@ -11,8 +11,13 @@ One style guide for every deck, document, diagram and animation SeanYeh makes, w
 - Slide decks → section 2
 - Diagrams, in any tool → section 3
 - Animations of a moving mechanism (Motion Canvas: web page or Slidev embed) → section 4
+- PowerPoint (.pptx) decks, especially product or system briefings built from screenshots → section 5
 
 Throughout, "audience" means whoever reads or watches: students, reviewers, teammates, judges.
+
+Rules for every output:
+- Chinese wording follows https://github.com/LCY000/zh-tw-writing. Read its `SKILL.md` before writing, and run its `scripts/check_zh.py` on the finished text, fixing what it reports.
+- Every figure (accuracy, counts, sizes) has a recorded source: where it came from, when, and under what conditions (test set version, sample count, per-class or overall). Do not state a condition the source does not show (for example "all measured on unseen data"); ask instead.
 
 ---
 
@@ -267,3 +272,51 @@ Commands: `npm install`, `npm start` (editor at localhost:9000 for building scen
 - `python3 check_motion.py http://localhost:4174/ --scene name --shots shots/` for every scene, and once more with `?embed=1` when the animation goes in a deck. It must exit 0: it reports text outside the canvas, text overflowing its box, overlapping text, text under 24 px, steps that never settle, and console errors (an unreachable web font is only a warning).
 - Look at every step screenshot at full resolution, the opening and the final state included.
 - For a deck, press through the slide with the arrow keys forward and back, enter it from the previous and from the following slide, and confirm the animation follows.
+
+---
+
+## 5. PowerPoint decks (pptx)
+
+For decks delivered as .pptx, typically a briefing that walks through a product with real screenshots. The look (palette, fonts, sizes, no AI-style decoration) follows section 2 translated to PowerPoint; the rules below cover what PowerPoint and screenshots add. Build with a generator script (for example pptxgenjs plus a post-processing step for animations), never by hand, so every fix is reproducible.
+
+### Content
+- An external briefing explains how the system works, not only how to operate it: a data-flow diagram (where requests enter, which services they pass, where data is stored, how results return), the model deployment architecture (training source, inference engine, file format, whether a model change needs a redeploy, resource limits), and the external API (main endpoints, authentication and scopes, event notifications such as webhooks, plus a sequence diagram of one complete call). Check every architectural claim against the code or config, not memory.
+- When adding a chapter, update the agenda, chapter numbers, summary slide and total page count with it.
+- No speaker notes in the file; the talk script lives in a separate file.
+
+### Layout
+- Slides of the same kind use the same sizes: compute every position from shared layout constants (margins, content area, font sizes) instead of tuning slides one by one. Pictures scale to the content area keeping their aspect, centred. Check by viewing all slides as a contact sheet.
+- No large empty areas: a picture or zoomed view fills the content area. When a zoom window's aspect differs from the display box, widen the window rather than leaving a void.
+- Crops and zooms never cut through text, icons or lines: compute an ink map of the screenshot (small blocks, "ink" when the block's max−min brightness passes a threshold), then move each crop edge to the nearest run of blank blocks within a limit, ignoring border lines that span the whole image. Check all four edges of every crop zoomed in.
+- Screenshots are clean: no focus rings, carets, hover highlights or other capture-time state. Move focus and the pointer away before capturing; retouch the ones already taken and keep the original.
+- Code, API paths and parameters use a monospace font that ships on every platform (Courier New). A font missing on the presenting machine is substituted with different widths and symbols such as `{id}` run together. Preview once in a second renderer.
+
+### Marks on screenshots
+- A highlight frame fits what it points at: start from a rough box, then shrink it to the content's ink bounds with an even small margin. Use hand-set coordinates only where the automatic fit fails (busy backgrounds), and mark them as such.
+- Number badges never cover content or each other: place them in the gutter beside the picture; when another frame lies between, or the frame is far from the edge, put the badge at the frame's top-left corner; when two badges collide, move one to the top-right corner.
+- Whatever the text says the system does must be visible on screen. Every point named in the caption has a mark, and a zoom slide when it is small. When the system shows it subtly (a thin dashed outline), say what it looks like.
+
+### Animation
+Every step appears on its own click, in order; never jump from step 1 to step 3. Each animation type has one fixed use, the same across the deck:
+
+| Use | Animation | Setting |
+|---|---|---|
+| Bullets, frames, diagram parts revealed in order | Entrance: Fade | one click per step, about 0.15 s |
+| An element that should read as "appearing" (a result mark) | Entrance: Zoom, optional delay | about 0.3 s |
+| Something travelling (data sent from one box to another) | Fade plus Motion Path | about 1.5 s |
+| From the full screenshot to a detail | Slide transition: Morph | about 0.5 s; both slides use the same picture with the same object name and only the crop changes, so the view glides and zooms; fall back to Fade for older PowerPoint |
+| Agenda to chapters | Summary/Section Zoom | clicking a tile on the agenda opens that chapter and returns to the agenda at its end |
+
+- When a slide uses Morph zooms, every point named in its caption gets its own zoom slide, in caption order, matching the badge numbers; never zoom only some of them.
+- Keep fades short so nobody waits for an animation.
+- The takeaway line (accent text) is never animated; it is visible from the start.
+- Check in slideshow mode from start to end: every click changes something, in order, with no skipped or empty steps.
+
+### Redaction
+- Blur or mask only what must be hidden (addresses, customer names), shaped to what is visible at capture time: when a popup covers part of the sensitive text, mask only the part left uncovered, never the popup.
+- After changing a redaction, regenerate only the affected screenshots so hand retouches elsewhere are not overwritten, then zoom in on every slide that uses that screenshot.
+
+### Checks before delivering
+- Validate the file (schema, relationships) after every build and render it to PDF and images for review.
+- Look at full-resolution renders of changed slides, not a scaled-down contact sheet.
+- Verify review findings against the source and renders before applying them; list rejected ones with the reason.
