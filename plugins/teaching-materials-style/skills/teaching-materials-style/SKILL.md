@@ -297,20 +297,36 @@ For decks delivered as .pptx, typically a briefing that walks through a product 
 - Whatever the text says the system does must be visible on screen. Every point named in the caption has a mark, and a zoom slide when it is small. When the system shows it subtly (a thin dashed outline), say what it looks like.
 
 ### Animation
-Every step appears on its own click, in order; never jump from step 1 to step 3. Each animation type has one fixed use, the same across the deck:
+Animation exists to pace the explanation: one click, one new idea. It is never decoration.
 
-| Use | Animation | Setting |
+Triggers and steps
+- Every step starts On Click. Elements that belong to the same idea (a box and the arrow that enters it, a message and its label) start With Previous on that same click. Never chain steps with After Previous so they play by themselves; the presenter controls the pace.
+- Never skip: if the caption or the note names three steps, there are three clicks, in that order, and their numbers match the badges or the labels on screen.
+- Entrance effects only. No exit, emphasis, flicker or colour-change effects; nothing that appeared disappears again, so the last click shows the complete slide and the PDF export (which shows the final state) is complete too.
+- Going back (previous click or previous slide) must leave the slide in a correct state; check it.
+
+Effects, timing and when to use each
+
+| Situation | Effect | Timing |
 |---|---|---|
-| Bullets, frames, diagram parts revealed in order | Entrance: Fade | one click per step, about 0.15 s |
-| An element that should read as "appearing" (a result mark) | Entrance: Zoom, optional delay | about 0.3 s |
-| Something travelling (data sent from one box to another) | Fade plus Motion Path | about 1.5 s |
-| From the full screenshot to a detail | Slide transition: Morph | about 0.5 s; both slides use the same picture with the same object name and only the crop changes, so the view glides and zooms; fall back to Fade for older PowerPoint |
-| Agenda to chapters | Summary/Section Zoom | clicking a tile on the agenda opens that chapter and returns to the agenda at its end |
+| Building a diagram step by step: architecture, data flow, model deployment, a pipeline. Each step adds the next box with its incoming arrow, in the direction the data flows (left to right, top to bottom) | Entrance: Fade | 0.15 s, starts immediately on the click |
+| A sequence diagram (request and response between two parties) | Entrance: Fade, one message arrow with its label per step; an optional message (for example a webhook) is the last step | 0.15 s |
+| A set of results that should read as appearing one after another on a single click, for example coverage circles around each extinguisher | Entrance: Zoom (grow from the centre) plus fade, staggered | 0.3 s each; the first starts at once, each next one 0.2 s later (0, 0.2, 0.4 s ...) |
+| Showing that something travels, for example data moving through the pipeline once the diagram is complete | Fade in, then Motion Path along the drawn arrows | fade 0.15 s, path starts 0.15 s after the click and runs 1.5 s; always the last step, after every box and arrow it travels along is visible |
+| Walking through a screenshot: overview, then a close-up of each numbered mark | Slide transition: Morph, between an overview slide and one zoom slide per mark | 0.5 s. Both slides hold the same picture with the same object name and only its crop changes, so the view glides and zooms; title, captions and chrome are identical so they stay still. Fallback for older PowerPoint: Fade transition |
+| The agenda | Summary/Section Zoom tiles, one per chapter | 0.5 s; clicking a tile opens that chapter and returns to the agenda at its end |
 
-- When a slide uses Morph zooms, every point named in its caption gets its own zoom slide, in caption order, matching the badge numbers; never zoom only some of them.
-- Keep fades short so nobody waits for an animation.
-- The takeaway line (accent text) is never animated; it is visible from the start.
-- Check in slideshow mode from start to end: every click changes something, in order, with no skipped or empty steps.
+- Keep effects short: fades 0.15 s, zooms 0.3 s, transitions 0.5 s. Only a motion path may take longer (about 1.5 s), because the movement is the point.
+- Zoom slides: when any mark on a screenshot needs a close-up, every mark gets its own zoom slide, in badge order, so the walkthrough never jumps from mark 1 to mark 3.
+
+Never animated
+- Title, chapter label, progress bar and footer.
+- The takeaway line (accent text): it is visible from the start, because it is the slide's conclusion.
+- Screenshots themselves, tables, and text-only slides: they are shown whole; the explanation goes in the caption or script.
+
+Checks
+- Play the slideshow from the first slide to the last and back: every click changes exactly one idea, in order, with no empty clicks and no skipped steps; Morph slides glide without a jump; zoom tiles return to the agenda.
+- Export to PDF and confirm each animated slide shows its complete final state.
 
 ### Redaction
 - Blur or mask only what must be hidden (addresses, customer names), shaped to what is visible at capture time: when a popup covers part of the sensitive text, mask only the part left uncovered, never the popup.
