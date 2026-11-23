@@ -91,6 +91,7 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 ### Titles and wording
 - Titles never centered. Default top-left, content centered in the remaining space; on some slides the title sits right above the content. Section dividers centered horizontally: large section number in the accent color, subsections on the right.
 - Titles concise and formal, never colloquial, never questions. Jokes and analogies go in the body, dialogue boxes or the script file.
+- Every term, abbreviation, symbol and legend entry that appears on a slide is explained on that same slide, in one short line (note column, caption, a glossary line under the figure, or an extra table column). The script, an earlier slide or the presenter's voice do not count: a reader who lands on the slide must be able to read it alone. Prefer a self-explanatory name over a code letter or label: show "Suggest only" and "Original control", not "B" and "A" that the audience has to look up; if a letter is kept, the same slide says what it stands for. Symbols inside screenshots (▲ ▼ =, arrows, colours, units) get their meaning in the note or caption; abbreviations such as EMS, PUE, CV(RMSE) get their full name or meaning once per slide that uses them. English labels in a diagram keep a Chinese gloss on the slide.
 - All on-slide text (item titles, body, note column, takeaways, tables) uses formal written wording, not vivid colloquial phrases ("版本衝突", not "版本會打架").
 
 ### Layout
@@ -357,6 +358,7 @@ Checks
 - Contrast: compute the ratio of every text colour against the fill it sits on (the slide background, a shape or a table cell), accent text on accent-soft included; all must be 4.5:1 or more. This is why the accent is #027874: #0e827d reaches only 3.98:1 on accent-soft #e2f0ef. Check the generated XML, not the design tokens.
 - Time every step from the XML: no step, delays included, ends later than 1 s after its click.
 - List the animations of every slide next to the idea each one carries: an idea with two entries is a duplicate.
+- For every slide, list its terms, abbreviations and symbols and where on that slide each is explained; any that is explained only elsewhere gets a line added.
 - LibreOffice opening the file proves little: it accepts XML that PowerPoint rejects and cannot play Morph or motion paths. Validate every slide XML against the ECMA-376 schema (pml-slide.xsd; the Apache POI `ooxml-schemas` jar carries the XSDs). Then open the deck in PowerPoint, play every animated slide, and save a copy from PowerPoint: diffing that copy against the generated file shows what PowerPoint rewrote or dropped. State plainly in the hand-off what was not played.
 
 ### Redaction
