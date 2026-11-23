@@ -52,7 +52,7 @@ python3 ../../scripts/check_motion.py http://localhost:4174/ --scene jobFlow --s
 
 | 檔案 | 內容 |
 |---|---|
-| `src/theme.ts` | 顏色、字級、機器尺寸與座標計算。要改外觀先改這裡。`COLOR.accent` 讀觀眾在簡報選的強調色（`ui-accent`），沒選過是青 `#0e827d`；文字用 `COLOR.accentText` |
+| `src/theme.ts` | 顏色、字級、機器尺寸與座標計算。要改外觀先改這裡。`COLOR.accent` 讀觀眾在簡報選的強調色（`ui-accent`），沒選過是青 `#027874`；文字用 `COLOR.accentText` |
 | `src/components/parts.tsx` | 可重複使用的零件：文字、方塊、一台機器 |
 | `src/components/motion.tsx` | 動作語彙：沿路徑移動、trail、彈出、閃一下。見下面「怎麼讓動畫絲滑」 |
 | `src/scenes/clusterFlow.tsx` | 完整版流程圖：六個步驟，照投影片的座標寫 |

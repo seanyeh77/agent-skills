@@ -169,7 +169,7 @@ onBeforeUnmount(() => close(false))
           >
         </div>
         <div id="acp-hint" class="acp-hint" :class="{ bad }">
-          {{ bad ? '色碼格式不正確：需要 6 個 0 到 9 或 a 到 f 的字元，例如 0e827d' : '輸入 6 碼色碼，可省略 #' }}
+          {{ bad ? '色碼格式不正確：需要 6 個 0 到 9 或 a 到 f 的字元，例如 027874' : '輸入 6 碼色碼，可省略 #' }}
         </div>
       </div>
     </Teleport>

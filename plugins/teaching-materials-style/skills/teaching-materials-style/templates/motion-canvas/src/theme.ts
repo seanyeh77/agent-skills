@@ -6,11 +6,11 @@
  */
 /**
  * 強調色：觀眾在簡報選色器選的顏色（存在 localStorage 的 ui-accent；播放頁與簡報同網域，
- * 讀得到），沒有選過就用教材主題預設的青 #0e827d。只給反例裡唯一改變的那個元素用。
+ * 讀得到），沒有選過就用教材主題預設的青 #027874。只給反例裡唯一改變的那個元素用。
  * 文字要用 COLOR.accentText：顏色太淺時加深到在白底達 4.5:1，換算方式同設計系統。
  * 簡報換色時 MotionCanvas.vue 會重新載入動畫，所以這裡在載入時讀一次就夠了。
  */
-const DEFAULT_ACCENT = '#0e827d';
+const DEFAULT_ACCENT = '#027874';
 
 function readAccent(): string {
   try {
