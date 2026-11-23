@@ -1,6 +1,6 @@
 ---
-name: "teaching-materials-style"
-description: "SeanYeh's house style for any slide deck, document, note, diagram or animation (talks, reports, proposals, technical docs, teaching). Use for Slidev decks, PowerPoint (.pptx) decks built from screenshots, Notion or other docs, diagrams in any tool, and Motion Canvas animations (web page or Slidev embed)."
+name: teaching-materials-style
+description: SeanYeh's house style for any slide deck, document, note, diagram or animation (talks, reports, proposals, technical docs, teaching). Use for Slidev decks, PowerPoint (.pptx) decks built from screenshots, Notion or other docs, diagrams in any tool, and Motion Canvas animations (web page or Slidev embed).
 ---
 
 # Presentation and document style
@@ -75,7 +75,7 @@ Applies to any deck: lectures and workshops, conference or club talks, project a
 
 ### Palette and fonts (hybrid preset of the design system)
 - Decks use the "teaching" preset of seanyeh77/ui-design-system, chosen as the hybrid option: neutrals and fonts come from the design system, while the accent (teal by default), sharp corners and thin borders stay from the slide style. Deck CSS reads the design-system token names (--bg, --surface, --surface-sub, --ink, --ink-muted, --line, --line-strong, --accent, --accent-soft, --radius-sm, --radius-md, --font-sans, --font-mono) and never hard-codes these values; the preset supplies them.
-- Values: bg #fcfbfb, surface #ffffff, code and terminal-bar background (surface-sub) #f6f5f4, ink #171512, muted (ink-muted) #6d645a, rules (line) #e2dfdc, heavy rules and dividers #171512, accent 青 #027874 by default (chapter labels, progress bar, list markers, note border, correct answers), accent-soft #e2f0ef by default (highlighted code lines, soft fills); accent-colored text reads `--accent-text` (the accent itself for every swatch, darkened only for a custom color below 4.5:1), inactive focus-index items in the muted ink #6d645a (lighter grays such as #aca49a fall below 4.5:1).
+- Values: bg #fcfbfb, surface #ffffff, code and terminal-bar background (surface-sub) #f6f5f4, ink #171512, muted (ink-muted) #6d645a, rules (line) #e2dfdc, heavy rules and dividers #171512, accent 青 #027874 by default (chapter labels, progress bar, list markers, note border, correct answers), accent-soft #e1efee by default (highlighted code lines, soft fills); accent-colored text reads `--accent-text` (the accent itself for every swatch, darkened only for a custom color below 4.5:1), inactive focus-index items in the muted ink #6d645a (lighter grays such as #aca49a fall below 4.5:1).
 - The theme color is adjustable: teal is only the default, and each viewer can change it with the accent picker (see Setup). Every accent use reads `--accent`, `--accent-soft` or `--accent-text`, never a hard-coded teal or other color, so one choice recolors the whole deck: progress bar, chapter label, section numbers, note border, list markers, highlighted code, quiz answer, takeaway lines and the one highlighted diagram element. Neutrals, fonts and the diagram palette stay fixed.
 - Radius 0 everywhere (radius-sm and radius-md are 0 px in this preset); no shadows; frames keep 1.5 px borders in the line color.
 - Fonts: titles Inter + Noto Sans TC, weight 700. Body Inter + Noto Sans TC. Code, terminal and mono labels Geist Mono + Noto Sans TC.
@@ -224,7 +224,7 @@ For mechanisms where something moves and the motion is the point: a job travelli
 The same animation becomes two outputs: a standalone web page (published as an artifact) and an embed in a Slidev deck that advances with the deck's clicks.
 
 ### Template and scripts
-In the plugin copy of this skill, and on GitHub at https://github.com/seanyeh77/agent-skills/tree/main/plugins/teaching-materials-style/skills/teaching-materials-style (clone the repo or download the folder when the copy at hand has only SKILL.md):
+Shipped with this skill (also at https://github.com/seanyeh77/agent-skills/tree/main/plugins/teaching-materials-style/skills/teaching-materials-style):
 - `templates/motion-canvas/`: Vite project with Motion Canvas 3.17.2 (versions pinned, package-lock included). Start every new animation by copying it, keep `theme.ts` and `components/`, and write new scenes in `src/scenes/` (add them to `src/project.ts`). Its README covers the files, URL parameters and pitfalls. The three Slurm scenes are examples: `jobFlow` (basic), `clusterFlow` (full flow, tokens travelling along paths), `backfill` (signal-driven layout, reactive text).
 - `templates/slidev/MotionCanvas.vue`: the deck component.
 - `scripts/check_motion.py`: plays every step and audits it.
@@ -355,7 +355,7 @@ Checks
 - Play the slideshow from the first slide to the last and back: every click changes exactly one idea, in order, with no empty clicks and no skipped steps; Morph slides glide without a jump; zoom tiles return to the agenda.
 - Export to PDF and confirm each animated slide shows its complete final state.
 - For every picture, list the effective text size (see Layout) and fix anything under the limits before delivery.
-- Contrast: compute the ratio of every text colour against the fill it sits on (the slide background, a shape or a table cell), accent text on accent-soft included; all must be 4.5:1 or more. This is why the accent is #027874: #0e827d reaches only 3.98:1 on accent-soft #e2f0ef. Check the generated XML, not the design tokens.
+- Contrast: compute the ratio of every text colour against the fill it sits on (the slide background, a shape or a table cell), accent text on accent-soft included; all must be 4.5:1 or more. This is why the accent is #027874: #0e827d reaches only about 3.9:1 on accent-soft (#e1efee). Check the generated XML, not the design tokens.
 - Time every step from the XML: no step, delays included, ends later than 1 s after its click.
 - List the animations of every slide next to the idea each one carries: an idea with two entries is a duplicate.
 - For every slide, list its terms, abbreviations and symbols and where on that slide each is explained; any that is explained only elsewhere gets a line added.
