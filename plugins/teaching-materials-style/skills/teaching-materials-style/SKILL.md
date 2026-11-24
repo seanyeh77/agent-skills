@@ -248,6 +248,7 @@ Commands: `npm install`, `npm start` (editor at localhost:9000 for building scen
 - An arrival ends with a flash on the target: bright for 0.17 s, back to its color in 0.23 s (`flash()`).
 - Tokens pop in and vanish with `popIn()` and `vanish()` (0.17 s each), and removed nodes are deleted from the scene.
 - Durations stay short: a travel 0.6 to 1.8 s depending on distance, fades 0.2 to 0.3 s.
+- A number that stands for a count or a value in the mechanism (a semaphore value, a counter, a time) changes at once to its next integer, with a flash on its box to mark the change; never tween it, which shows fractions such as -0.4237 that also overflow the box. Text bound to a numeric signal rounds it (`Math.round`) as a guard.
 
 ### Code pitfalls
 - The player imports `./project?project`, never `./project`; without the suffix the project is not bootstrapped and playback stops on the first error.
