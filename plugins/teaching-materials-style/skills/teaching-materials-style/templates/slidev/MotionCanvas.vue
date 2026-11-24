@@ -82,17 +82,64 @@ onBeforeUnmount(() => window.removeEventListener('message', onMessage));
 watch(stage, () => ready.value && send());
 
 // Thumbnails (overview, next-slide preview) do not need a running animation.
-// In the deck itself the iframe is created only while its slide is the current one:
-// Slidev preloads the neighbouring slides hidden (0 x 0 px), and Motion Canvas would
-// measure every box and text there as size 0 and keep those sizes.
+// Slidev keeps the neighbouring slides mounted but hidden with display: none, where Motion
+// Canvas would measure every box and text as size 0. So in the deck view the iframe is
+// teleported to a page-level layer: it loads while the slide is still hidden (parked
+// transparent behind the deck), and is laid over this slide's frame once the slide is shown.
+// Arriving on the slide then shows an animation that is already loaded and at the right step.
 const isActive = useIsSlideActive();
+const floating = computed(() => $renderContext.value === 'slide');
 const live = computed(
   () =>
     ['slide', 'presenter', 'print'].includes($renderContext.value) &&
-    ($renderContext.value === 'print' || isActive.value),
+    (floating.value || $renderContext.value === 'print' || isActive.value),
 );
+
+const box = ref<HTMLElement>();
+const rect = ref({left: 0, top: 0, width: 1374, height: 773});
+let raf = 0;
+function track() {
+  const el = box.value;
+  if (el && isActive.value) {
+    const r = el.getBoundingClientRect();
+    if (r.width > 0) {
+      const c = rect.value;
+      if (c.left !== r.left || c.top !== r.top || c.width !== r.width || c.height !== r.height)
+        rect.value = {left: r.left, top: r.top, width: r.width, height: r.height};
+    }
+  }
+  raf = requestAnimationFrame(track);
+}
+onMounted(() => {
+  if (floating.value) raf = requestAnimationFrame(track);
+});
+onBeforeUnmount(() => cancelAnimationFrame(raf));
+const floatStyle = computed(() => {
+  const r = rect.value;
+  // While the slide is hidden the frame stays inside the window, transparent and behind the
+  // deck: Chrome stops rendering iframes that are off-screen, which would freeze a step that
+  // is still playing.
+  const shown = isActive.value;
+  return {
+    left: `${r.left}px`,
+    top: `${r.top}px`,
+    width: `${r.width}px`,
+    height: `${r.height}px`,
+    opacity: shown ? 1 : 0,
+    zIndex: shown ? 1 : -1,
+  };
+});
+
 watch(live, on => {
   if (!on) ready.value = false;
+});
+// Leaving the slide hides the floating frame at once (before the next paint).
+watch(isActive, on => {
+  if (on) {
+    const el = box.value;
+    const r = el?.getBoundingClientRect();
+    if (r && r.width > 0) rect.value = {left: r.left, top: r.top, width: r.width, height: r.height};
+  }
 });
 
 // If the animation has not reported back a few seconds after the iframe appears
@@ -128,16 +175,22 @@ onBeforeUnmount(() => window.removeEventListener('ui-accent-change', onAccent));
 </script>
 
 <template>
-  <div class="motion-canvas">
-    <iframe
-      v-if="live"
-      :key="`${attempt}-${recolor}`"
-      ref="frame"
-      :src="url"
-      tabindex="-1"
-      title="Animation"
-      loading="eager"
-    />
+  <div ref="box" class="motion-canvas">
+    <!-- In the deck view the iframe lives in a page-level layer (see floating below), so it
+         can load while this slide is still hidden; elsewhere it stays in place. -->
+    <Teleport to="body" :disabled="!floating">
+      <iframe
+        v-if="live"
+        :key="`${attempt}-${recolor}`"
+        ref="frame"
+        :class="{'mc-floating': floating}"
+        :style="floating ? floatStyle : undefined"
+        :src="url"
+        tabindex="-1"
+        title="Animation"
+        loading="eager"
+      />
+    </Teleport>
   </div>
 </template>
 
@@ -146,8 +199,8 @@ onBeforeUnmount(() => window.removeEventListener('ui-accent-change', onAccent));
   width: 100%;
   aspect-ratio: 16 / 9;
   max-height: 100%;
-  border: 1.5px solid var(--line, #e2dfdc);
-  background: #ffffff;
+  /* No frame: the canvas uses the slide background, so the animation sits on the page. */
+  background: var(--bg, #fcfbfb);
 }
 .motion-canvas iframe {
   display: block;
@@ -156,5 +209,13 @@ onBeforeUnmount(() => window.removeEventListener('ui-accent-change', onAccent));
   border: 0;
   /* Clicks and keys stay with Slidev, so arrow keys keep turning slides. */
   pointer-events: none;
+}
+.mc-floating {
+  position: fixed;
+  display: block;
+  border: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: var(--bg, #fcfbfb);
 }
 </style>

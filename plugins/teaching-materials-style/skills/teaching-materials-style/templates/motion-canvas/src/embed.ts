@@ -98,9 +98,26 @@ presenter.onInfoChanged.subscribe(value => {
  * 到第 stage 段。下一段照常播放動畫；往回或跳好幾段則直接顯示那一段的結果，
  * 不重播（Slidev 往回翻頁時就是這樣）。
  */
+let jumped = false;
 function goTo(target: number) {
   const count = slideIds.length;
   const stage = Math.max(0, Math.min(target, count));
+  if (embedded && !jumped && count > 0) {
+    // 第一次收到外層的段數：直接到那一段的結果，不播開場、不播前面的段落。
+    // 投影片可能在動畫載入前就已顯示，這樣進到這頁時畫面不會再變動。
+    jumped = true;
+    if (stage < count) {
+      presenter.requestSlide(slideIds[stage]);
+    } else {
+      // 最後一段後面沒有 beginSlide：快轉播完再恢復正常速度。
+      const playback = (presenter as any).playback;
+      playback.speed = 64;
+      playSegment(count - 1);
+      const restore = () => (playback.finished ? (playback.speed = 1) : requestAnimationFrame(restore));
+      requestAnimationFrame(restore);
+    }
+    return;
+  }
   const current = stageOf(info);
   if (stage === current) return;
   if (stage === current + 1) {
@@ -195,6 +212,6 @@ if (embedded) {
     size: new Vector2(1920, 1080),
     resolutionScale: 1,
     colorSpace: 'srgb',
-    background: '#ffffff',
+    background: '#fcfbfb',
   });
 })();

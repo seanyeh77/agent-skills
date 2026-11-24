@@ -43,7 +43,7 @@ export const COLOR = {
   node: '#e7e7e7',    // 一台機器
   service: '#adf0c7', // 機器上跑的服務
   storage: '#6eea9e', // 儲存、匯流排、移動中的 job
-  page: '#ffffff',    // 背景
+  page: '#fcfbfb',    // 背景，與簡報底色 (--bg) 相同
   dim: '#66707c',     // 次要文字
   trail: '#1f9d57',   // 移動留下的軌跡，比 storage 深一階才看得出來
   flash: '#94f2b8',   // 閃一下用的亮色，介於 service 與 storage 之間
@@ -59,11 +59,11 @@ export const STROKE = 2;
  * 畫布是 1920 x 1080，投影到 16:9 的螢幕上，32 px 大約等於投影片的 24 px。
  */
 export const FONT = {
-  title: 44,
+  title: 48,
   nodeTitle: 32,
   service: 30,
-  label: 28,
-  caption: 26,
+  label: 40,
+  caption: 32,
 };
 
 /**

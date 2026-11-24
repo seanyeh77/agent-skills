@@ -233,7 +233,8 @@ Commands: `npm install`, `npm start` (editor at localhost:9000 for building scen
 
 ### Look
 - The Diagrams rules (section 3) apply: the diagram palette, sharp corners, 2 px #1a1a1a borders, #333333 elbowed lines, English only on the drawing, no line behind text, compact and symmetric layout.
-- Canvas 1920 x 1080, white background, 60 fps. Text in Inter, at least 24 px on the canvas.
+- Canvas 1920 x 1080, 60 fps, background the deck's page color #fcfbfb (`COLOR.page`, the same as `--bg`), never white: the animation sits on the slide with no visible frame. Text in Inter: title 48 px, labels 40 px, captions 32 px, never under 24 px.
+- The drawing fills the canvas: lay out boxes, rows and the timeline across the full 1920 x 1080 (margins about 60 px) instead of a small diagram in the middle. In a deck the frame takes the full width of the content area, so canvas pixels map almost 1 to 1 onto the slide.
 - Motion colors: moving tokens #94f2b8 with the usual border, the trail behind a moving token #1f9d57 at 6 px, secondary text #66707c. The one changed element of a contrast case uses `COLOR.accent` (text `COLOR.accentText`), which `theme.ts` reads from the viewer's `ui-accent` (青 #027874 when none is stored); when the viewer picks another color in the deck, `MotionCanvas.vue` reloads the animation at the current step.
 - Every color, font size and machine dimension lives in `src/theme.ts`; scenes never hard-code a color or a size. Positions that must line up are computed from the same constants as the shapes they touch.
 - A "Step x of y  Name" label in the bottom-right corner, updated each step.
@@ -263,7 +264,7 @@ Commands: `npm install`, `npm start` (editor at localhost:9000 for building scen
 - Copy the built `dist/` to the deck's `public/motion/` (again after every rebuild) and `MotionCanvas.vue` to `components/`.
 - `<MotionCanvas src="motion/index.html" scene="clusterFlow" :steps="7" />`, where steps is the number of `step()` calls in the scene (check_motion.py prints it). The component takes that many clicks, counted like v-click, so other v-click elements and the note column keep their order; give `at` an absolute click number to share clicks with the note column.
 - Clicking forward plays the next segment; going back, or entering the slide from the following one, shows the state at once without replaying. Keys and clicks stay with Slidev (the iframe ignores pointer events).
-- The component creates its iframe only while its slide is the current one: Slidev keeps the neighbouring slides mounted but hidden at 0 px, and Motion Canvas measures every box and text there as size 0 and keeps it (boxes vanish, labels shift). If the animation has not reported back after 6 s it reloads the iframe once.
+- Entering the slide must not change the picture: no blank frame, no load, no replayed opening. Slidev keeps the neighbouring slides mounted but hidden (`display: none`), where Motion Canvas would measure every box and text as size 0 and keep it, so the iframe cannot simply sit inside the slide. `MotionCanvas.vue` therefore teleports the iframe to a page-level layer: it loads while its slide is still a hidden neighbour, parked inside the window with opacity 0 behind the deck (an iframe moved off-screen is throttled by Chrome and freezes mid-step), and on arrival is laid over the slide's placeholder box, whose position a requestAnimationFrame loop copies. `embed.ts` answers the first `motion:goto` by jumping straight to that step's end state without playing the opening or earlier steps (the final state is reached by fast-forwarding the last segment), so entering from either side shows the right state at once. Keep both parts when changing the component or the player. If the animation has not reported back after 6 s it reloads the iframe once.
 - The player page loads its Google Fonts stylesheet without blocking (`media="print"` swapped on load) and waits at most 2.5 s for Inter: a blocking stylesheet keeps the player script from running, so on a slow phone connection the frame stays white.
 - The slide keeps one concept: title, the animation filling the content area, and per-step notes in the note column.
 - The slide checker cannot see inside the canvas: run check_motion.py with `?embed=1` as well.
@@ -273,6 +274,8 @@ Commands: `npm install`, `npm start` (editor at localhost:9000 for building scen
 - `python3 check_motion.py http://localhost:4174/ --scene name --shots shots/` for every scene, and once more with `?embed=1` when the animation goes in a deck. It must exit 0: it reports text outside the canvas, text overflowing its box, overlapping text, text under 24 px, steps that never settle, and console errors (an unreachable web font is only a warning).
 - Look at every step screenshot at full resolution, the opening and the final state included.
 - For a deck, press through the slide with the arrow keys forward and back, enter it from the previous and from the following slide, and confirm the animation follows.
+- Entry check for every animation slide, from the previous slide and from the following one: take a screenshot about 16 ms after arriving and another after 500 ms; the two must be pixel-identical (forward entry shows the opening state, backward entry the final state). Any difference is the entry jump coming back.
+- The final step shows the finished result of the mechanism: compare its numbers (end time, completed jobs, safe sequence) with an independent calculation, so a scene never stops one step early.
 
 ---
 
